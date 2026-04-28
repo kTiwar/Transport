@@ -1,0 +1,154 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: tms-edi-platform
+
+  # Exclude unavailable infrastructure auto-configs (Kafka + Redis not running locally)
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tms_edi
+    username: tms_user
+    password: tms_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: TmsEdiPool
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: public
+        jdbc:
+          batch_size: 50
+          order_inserts: true
+          order_updates: true
+
+  # ── Flyway ──────────────────────────────────────────────────────────────────
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: false
+
+  # ── Kafka ───────────────────────────────────────────────────────────────────
+  kafka:
+    bootstrap-servers: localhost:9092
+    admin:
+      fail-fast: false   # Don't block startup if Kafka is unavailable
+    producer:
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+      compression-type: snappy
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 100
+      fetch-min-size: 1
+      fetch-max-wait: 500
+
+  # ── Cache (simple in-memory; switch to redis/caffeine in production) ─────────
+  cache:
+    type: simple
+
+  # ── File Upload ─────────────────────────────────────────────────────────────
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 500MB
+      max-request-size: 500MB
+
+# ── TMS Custom Properties ────────────────────────────────────────────────────
+tms:
+  edi:
+    # After EDI parse+staging, auto-create Import Order and run TMS processing (separate transaction).
+    auto-chain-import-order: true
+  storage:
+    base-dir: ./edi-files
+  jwt:
+    secret: TmsEdiPlatformSecretKey2026EnterpriseGradeMinimum256BitsLong!
+    access-expiry-ms: 900000    # 15 minutes
+    refresh-expiry-ms: 86400000 # 24 hours
+  processing:
+    max-retries: 3
+    retry-delay-ms: 60000
+    batch-size: 1000
+  sftp:
+    poll-interval-ms: 60000
+
+  # OpenStreetMap Nominatim + OSRM + OR-Tools (see docs/TMS_ROUTE_OPTIMIZATION.md)
+  routing:
+    nominatim-base-url: https://nominatim.openstreetmap.org
+    nominatim-user-agent: TMS-RoutePlanner/1.0 (replace-with-your-contact@company.com)
+    osrm-base-url: ""
+    osrm-enabled: false
+    haversine-road-factor: 1.35
+    fallback-avg-speed-kmh: 45
+    default-depot-latitude: 55.6761
+    default-depot-longitude: 12.5683
+    optimizer-time-limit-seconds: 45
+    service-time-seconds: 300
+    time-horizon-seconds: 172800
+    time-slack-seconds: 86400
+    routing-time-zone-id: UTC
+    kafka-enabled: false
+    kafka-topic: tms.routing.routes-planned
+
+# ── Actuator ────────────────────────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+
+# ── OpenAPI ──────────────────────────────────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+# ── Logging ──────────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.tms.edi: DEBUG
+    org.springframework.kafka: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/tms-edi.log
+    max-size: 100MB
+    max-history: 30

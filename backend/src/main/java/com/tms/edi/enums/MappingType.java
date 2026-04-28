@@ -1,0 +1,26 @@
+package com.tms.edi.enums;
+
+public enum MappingType {
+    CUSTOMER,
+    TRANSPORT_TYPE,
+    OFFICE,
+    CS_RESPONSIBLE,
+    SALES_RESPONSIBLE,
+    TRIP_TYPE,
+    CARRIER,
+    ADDRESS,
+    COUNTRY,
+    ACTION,
+    GOOD_NUMBER,
+    UNIT_OF_MEASURE,
+    GOOD_TYPE,
+    GOOD_SUB_TYPE,
+    REFERENCE_CODE,
+    REVENUE,
+    REVENUE_TYPE,
+    CURRENCY_CODE,
+    EQUIPMENT_TYPE,
+    EQ_SUB_TYPE,
+    REGION,
+    MASTER_REGION
+}

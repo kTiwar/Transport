@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Orders>
+  <Order>
+    <CommunicationPartner>NAV2013</CommunicationPartner>
+    <TransactionType>Insert Order</TransactionType>
+    <ExternalOrderNumber>822110823</ExternalOrderNumber>
+    <TransportType>TRAILER</TransportType>
+    <CustomerNo>K0012009</CustomerNo>
+    <CustomerName>FOX INTERNATIONAL GROUP LTD</CustomerName>
+    <FinancialStatus />
+    <OperationalStatus />
+    <Reference1>BEERSE WEEK 25</Reference1>
+    <Reference2>VAM0045</Reference2>
+    <Reference3 />
+    <TotalGrossWeight>0.00</TotalGrossWeight>
+    <TotalNetWeight>0.00</TotalNetWeight>
+    <TotalVolume />
+    <TotalQuantity />
+    <TotalLoadingMeters />
+    <OrderReferences />
+    <TruckInfo>
+      <ExternalTruckID />
+      <TruckRegistrationNumber />
+    </TruckInfo>
+    <DriverInfo>
+      <ExternalDriverID />
+      <DriverName />
+    </DriverInfo>
+    <TrailerInfo>
+      <ExternalTrailerID />
+      <TrailerRegistrationNumber />
+    </TrailerInfo>
+    <ContainerInfo>
+      <ContainerNumber>GESU1442845</ContainerNumber>
+      <ContainerType>40FT</ContainerType>
+      <ContainerTypeISOCode></ContainerTypeISOCode>
+      <CarrierID>MSK</CarrierID>
+      <CarrierName>Maersk</CarrierName>
+      <SealNumber>Seal1234</SealNumber>
+      <ImportOrExport>Import</ImportOrExport>
+      <PickupPincode>Pickup123</PickupPincode>
+      <PickupReference>PickupRef123</PickupReference>
+      <DropOffPincode>Dropoff456</DropOffPincode>
+      <DropOffReference>DropoffRef456</DropOffReference>
+      <ContainerCancelled>TRUE</ContainerCancelled>
+    </ContainerInfo>
+    <VesselInfo>
+      <VesselName>MSC MARINA</VesselName>
+      <ETA>2025-02-01T00:00:00Z</ETA>
+      <ETD>2025-02-07T00:00:00Z</ETD>
+      <ClosingDateTime>2025-02-06T18:00:00Z</ClosingDateTime>
+      <DepotOutFromDateTime>2025-02-02T05:00:00Z</DepotOutFromDateTime>
+      <DepotInFromDateTime>2025-02-05T05:00:00Z</DepotInFromDateTime>
+      <VGMClosingDateTime>2025-02-06T15:00:00Z</VGMClosingDateTime>
+      <VGMWeight></VGMWeight>
+      <OriginCountry>US</OriginCountry>
+      <OriginPortName>Savannah</OriginPortName>
+      <OriginInfo>Port of Savannah, Georgia</OriginInfo>
+      <DestinationCountry></DestinationCountry>
+      <DestinationPortName></DestinationPortName>
+      <DestinationInfo></DestinationInfo>
+    </VesselInfo>
+    <OrderEquipments>
+      <OrderEquipment>
+        <MaterialType>1</MaterialType>
+        <EquipmentType>TAUTLINER</EquipmentType>
+      </OrderEquipment>
+    </OrderEquipments>
+    <OrderCargos>
+      <OrderCargo>
+        <ExternalGoodID>G0001</ExternalGoodID>
+        <GoodDescription>General cargo</GoodDescription>
+        <TracingNumber1 />
+        <TracingNumber2 />
+        <Quantity>1</Quantity>
+        <UnitOfMeasure>LADING</UnitOfMeasure>
+        <GrossWeight>0.00</GrossWeight>
+        <NetWeight>0.00</NetWeight>
+        <Volume>0</Volume>
+        <Length>0.00</Length>
+        <Width>0.00</Width>
+        <Height>0.00</Height>
+        <LoadingMeters>0.00</LoadingMeters>
+        <Diameter>0.00</Diameter>
+        <DangerousGoods>false</DangerousGoods>
+        <ADRUNNumber />
+        <ADRClassification />
+        <SetTemperature>false</SetTemperature>
+        <Temperature>0.00</Temperature>
+      </OrderCargo>
+    </OrderCargos>
+    <OrderRemarks>
+      <OrderRemark>
+        <LineNo>0</LineNo>
+        <RemarkType>5</RemarkType>
+        <Remark />
+      </OrderRemark>
+    </OrderRemarks>
+    <OrderLines>
+      <OrderLine>
+        <ExternalOrderLineID>0</ExternalOrderLineID>
+        <Action>LOAD</Action>
+        <InitialDateTimeFrom />
+        <InitialDateTimeUntil />
+        <BookedDateTimeFrom>2022-06-21T08:00:00Z</BookedDateTimeFrom>
+        <BookedDateTimeUntil>2022-06-21T08:00:00Z</BookedDateTimeUntil>
+        <ExternalAddressID>26222</ExternalAddressID>
+        <AddressName>RATHER BEERSE</AddressName>
+        <AddressStreet>DENNENLAAN</AddressStreet>
+        <AddressHouseNumber>3A</AddressHouseNumber>
+        <AddressStreet2 />
+        <AddressPostalCode>2340</AddressPostalCode>
+        <AddressCity>BEERSE</AddressCity>
+        <AddressCountryCode>BE</AddressCountryCode>
+        <AddressContactPerson />
+        <AddressTelephone />
+        <AddressFax />
+        <AddressEmail />
+        <OrderLineRef1>VAM0045</OrderLineRef1>
+        <OrderLineRef2 />
+        <PartOfOrder />
+        <Mileage />
+        <OrderLineStatus />
+        <RequestedTimeFrom />
+        <RequestedTimeUntil />
+        <PlannedTimeFrom />
+        <PlannedTimeUntil />
+        <DriverFullName />
+        <TruckDescription />
+        <OrderLineCargos>
+          <OrderLineCargo>
+            <ExternalGoodID>G0001</ExternalGoodID>
+            <GoodDescription>General cargo</GoodDescription>
+            <GoodType />
+            <GoodSubType />
+            <TracingNumber1 />
+            <TracingNumber2 />
+            <Quantity>1.00</Quantity>
+            <UnitOfMeasure>LADING</UnitOfMeasure>
+            <GrossWeight>0.00</GrossWeight>
+            <NetWeight>0.00</NetWeight>
+            <Volume>0.00</Volume>
+            <Length>0.00</Length>
+            <Width>0.00</Width>
+            <Height>0.00</Height>
+            <LoadingMeters>0.00</LoadingMeters>
+            <Diameter>0.00</Diameter>
+            <DangerousGoods>false</DangerousGoods>
+            <ADRCode />
+            <SetTemperature />
+            <Temperature />
+          </OrderLineCargo>
+        </OrderLineCargos>
+        <OrderLineReferences>
+          <OrderLineReference>
+            <ReferenceCode>LOAD REF 1</ReferenceCode>
+            <ReferenceValue>VAM0045</ReferenceValue>
+          </OrderLineReference>
+        </OrderLineReferences>
+        <OrderLineRemarks>
+          <OrderLineRemark>
+            <LineNo>0</LineNo>
+            <RemarkType>0</RemarkType>
+            <Remark />
+          </OrderLineRemark>
+        </OrderLineRemarks>
+      </OrderLine>
+      <OrderLine>
+        <ExternalOrderLineID>0</ExternalOrderLineID>
+        <Action>UNLOAD</Action>
+        <InitialDateTimeFrom />
+        <InitialDateTimeUntil />
+        <BookedDateTimeFrom />
+        <BookedDateTimeUntil />
+        <ExternalAddressID>6744</ExternalAddressID>
+        <AddressName>VAN MOER OUDE DIJK K1994</AddressName>
+        <AddressStreet>OUDE DIJK KAAI</AddressStreet>
+        <AddressHouseNumber>1994</AddressHouseNumber>
+        <AddressStreet2 />
+        <AddressPostalCode>9130</AddressPostalCode>
+        <AddressCity>DOEL</AddressCity>
+        <AddressCountryCode>BE</AddressCountryCode>
+        <AddressContactPerson />
+        <AddressTelephone />
+        <AddressFax />
+        <AddressEmail />
+        <OrderLineRef1 />
+        <OrderLineRef2 />
+        <PartOfOrder />
+        <Mileage />
+        <OrderLineStatus />
+        <RequestedTimeFrom />
+        <RequestedTimeUntil />
+        <PlannedTimeFrom />
+        <PlannedTimeUntil />
+        <DriverFullName />
+        <TruckDescription />
+        <OrderLineCargos>
+          <OrderLineCargo>
+            <ExternalGoodID>G0001</ExternalGoodID>
+            <GoodDescription>General cargo</GoodDescription>
+            <GoodType />
+            <GoodSubType />
+            <TracingNumber1 />
+            <TracingNumber2 />
+            <Quantity>1.00</Quantity>
+            <UnitOfMeasure>LADING</UnitOfMeasure>
+            <GrossWeight>0.00</GrossWeight>
+            <NetWeight>0.00</NetWeight>
+            <Volume>0.00</Volume>
+            <Length>0.00</Length>
+            <Width>0.00</Width>
+            <Height>0.00</Height>
+            <LoadingMeters>0.00</LoadingMeters>
+            <Diameter>0.00</Diameter>
+            <DangerousGoods>false</DangerousGoods>
+            <ADRCode />
+            <SetTemperature />
+            <Temperature />
+          </OrderLineCargo>
+        </OrderLineCargos>
+        <OrderLineReferences>
+          <OrderLineReference>
+            <ReferenceCode>LOAD REF 1</ReferenceCode>
+            <ReferenceValue>VAM0045</ReferenceValue>
+          </OrderLineReference>
+        </OrderLineReferences>
+        <OrderLineRemarks>
+          <OrderLineRemark>
+            <LineNo>0</LineNo>
+            <RemarkType>0</RemarkType>
+            <Remark />
+          </OrderLineRemark>
+        </OrderLineRemarks>
+      </OrderLine>
+    </OrderLines>
+    <CustomData>
+      <CustomField>
+        <FieldName>OL_10000_PBPlanningGroup</FieldName>
+        <FieldValue>ZWN TRANSPORT</FieldValue>
+      </CustomField>
+      <CustomField>
+        <FieldName>OL_20000_PBPlanningGroup</FieldName>
+        <FieldValue>ZWN TRANSPORT</FieldValue>
+      </CustomField>
+    </CustomData>
+  </Order>
+</Orders>

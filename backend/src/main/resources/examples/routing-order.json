@@ -1,0 +1,11 @@
+{
+  "publicOrderId": "ROUTE-DEMO-001",
+  "pickupAddress": "Egervej 7, Assens",
+  "pickupPostcode": "5610",
+  "deliveryAddress": "Nørregade 10, Copenhagen",
+  "deliveryPostcode": "1165",
+  "weightKg": 1200.5,
+  "volumeM3": 4.2,
+  "timeWindowStart": "2026-04-06T08:00:00Z",
+  "timeWindowEnd": "2026-04-06T18:00:00Z"
+}

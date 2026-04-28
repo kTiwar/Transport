@@ -1,0 +1,8 @@
+{
+  "code": "TRK-001",
+  "vehicleType": "TRUCK_26T",
+  "capacityWeightKg": 12000,
+  "capacityVolumeM3": 80,
+  "shiftStart": "06:00",
+  "shiftEnd": "18:00"
+}

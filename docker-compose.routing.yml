@@ -1,0 +1,69 @@
+# TMS route optimization stack — PostGIS, OSRM, Kafka (optional).
+# Usage:
+#   docker compose -f docker-compose.routing.yml up -d
+#
+# OSRM needs a processed routing graph (.osrm files). See:
+#   https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM
+# Quick path: download a .osm.pbf extract, then on the host run osrm-extract / contract / customize,
+# mount the output directory below as /data.
+
+services:
+  postgres-routing:
+    image: postgis/postgis:16-3.4
+    container_name: tms-postgis-routing
+    environment:
+      POSTGRES_DB: tms_edi
+      POSTGRES_USER: tms_user
+      POSTGRES_PASSWORD: tms_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_routing_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tms_user -d tms_edi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # OSRM routed service — replace command with your pre-built region.
+  # Example after preparing /data/denmark-latest.osrm:
+  #   command: osrm-routed --algorithm mld /data/denmark-latest.osrm
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend:latest
+    container_name: tms-osrm
+    ports:
+      - "5000:5000"
+    volumes:
+      - osrm_data:/data
+    command: osrm-routed --algorithm mld /data/region.osrm
+    profiles:
+      - osrm
+
+  zookeeper:
+    image: bitnami/zookeeper:3.9
+    container_name: tms-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    profiles:
+      - kafka
+
+  kafka:
+    image: bitnami/kafka:3.7
+    container_name: tms-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    depends_on:
+      - zookeeper
+    profiles:
+      - kafka
+
+volumes:
+  pg_routing_data:
+  osrm_data:

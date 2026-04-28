@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TMS EDI Integration Platform — Enterprise Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Fira+Code:wght@400;500;600&family=Nunito:wght@300;400;600;700&display=swap"/>
+<style>
+:root{
+  --bg0:#06090f;--bg1:#0b1120;--bg2:#111d33;--bg3:#192640;
+  --cyan:#00d4ff;--cyan2:#00a8cc;--orange:#ff6b35;--purple:#8b5cf6;
+  --green:#10b981;--yellow:#f59e0b;--red:#ef4444;--pink:#ec4899;
+  --text:#dde4f0;--muted:#5a7080;--border:#1e3248;
+  --card:#0e1929;--card2:#121f35;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg0);color:var(--text);font-family:'Nunito',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden}
+
+/* ─── HEADER ─── */
+header{background:linear-gradient(135deg,#060d1a 0%,#0a1628 50%,#060d1a 100%);border-bottom:1px solid var(--border);padding:0 32px;position:sticky;top:0;z-index:999}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:60px;max-width:1600px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;font-family:'Exo 2',sans-serif}
+.logo-text{font-family:'Exo 2',sans-serif;font-weight:700;font-size:16px;letter-spacing:.5px;color:var(--text)}
+.logo-text span{color:var(--cyan)}
+.header-badge{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);color:var(--cyan);font-size:11px;font-family:'Fira Code',monospace;padding:3px 10px;border-radius:20px;letter-spacing:1px}
+
+/* ─── TABS ─── */
+.tabs-bar{background:var(--bg1);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto;padding:0 32px;scrollbar-width:none;max-width:100%}
+.tabs-bar::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;padding:14px 20px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;display:flex;align-items:center;gap:7px}
+.tab-btn .tnum{font-family:'Fira Code',monospace;font-size:10px;background:rgba(255,255,255,.05);border-radius:4px;padding:1px 5px}
+.tab-btn:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.tab-btn.active .tnum{background:rgba(0,212,255,.15);color:var(--cyan)}
+
+/* ─── CONTENT ─── */
+.content{max-width:1600px;margin:0 auto;padding:32px 32px 80px}
+.tab-panel{display:none;animation:fadeIn .3s ease}
+.tab-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── SECTION HEADERS ─── */
+.section-title{font-family:'Exo 2',sans-serif;font-size:26px;font-weight:900;color:var(--text);margin-bottom:6px;letter-spacing:-0.5px}
+.section-title span{color:var(--cyan)}
+.section-sub{color:var(--muted);font-size:13px;margin-bottom:32px;max-width:800px;line-height:1.8}
+
+/* ─── GRID LAYOUTS ─── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+@media(max-width:1100px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+/* ─── CARDS ─── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:rgba(0,212,255,.25);box-shadow:0 4px 24px rgba(0,212,255,.07)}
+.card-title{font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title .icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px}
+
+/* ─── BADGES / TAGS ─── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px;font-family:'Fira Code',monospace}
+.badge-cyan{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:var(--cyan)}
+.badge-orange{background:rgba(255,107,53,.12);border:1px solid rgba(255,107,53,.3);color:var(--orange)}
+.badge-green{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.badge-purple{background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:var(--purple)}
+.badge-red{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.badge-yellow{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--yellow)}
+
+/* ─── KPI CARDS ─── */
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;text-align:center}
+.kpi-val{font-family:'Exo 2',sans-serif;font-size:36px;font-weight:900;line-height:1;margin-bottom:6px}
+.kpi-label{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.kpi-delta{font-size:12px;margin-top:6px}
+
+/* ─── TABLES ─── */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg2);color:var(--cyan);font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:12px 14px;text-align:left;white-space:nowrap}
+td{padding:10px 14px;border-top:1px solid var(--border);vertical-align:top;line-height:1.5}
+tr:hover td{background:rgba(255,255,255,.02)}
+td code{font-family:'Fira Code',monospace;font-size:12px;background:rgba(0,212,255,.08);color:var(--cyan);padding:2px 6px;border-radius:4px}
+td .pk{font-family:'Fira Code',monospace;font-size:11px;background:rgba(245,158,11,.15);color:var(--yellow);padding:2px 6px;border-radius:4px;font-weight:600}
+td .fk{font-family:'Fira Code',monospace;font-size:11px;background:rgba(139,92,246,.15);color:var(--purple);padding:2px 6px;border-radius:4px}
+
+/* ─── CODE BLOCKS ─── */
+.code-block{background:#020608;border:1px solid var(--border);border-radius:10px;padding:18px 22px;font-family:'Fira Code',monospace;font-size:12px;line-height:1.8;overflow-x:auto}
+.code-block .kw{color:#ff79c6}.code-block .str{color:var(--green)}.code-block .num{color:var(--orange)}.code-block .cmt{color:var(--muted)}.code-block .fn{color:var(--cyan)}.code-block .type{color:var(--yellow)}.code-block .path{color:#bd93f9}
+
+/* ─── TIMELINE / FLOW ─── */
+.flow-steps{display:flex;flex-direction:column;gap:0}
+.flow-step{display:flex;gap:20px;align-items:flex-start;padding:16px 0;position:relative}
+.flow-step:not(:last-child)::after{content:'';position:absolute;left:18px;top:48px;width:2px;height:calc(100% - 16px);background:linear-gradient(to bottom,var(--cyan),var(--purple));opacity:.3}
+.step-circle{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;color:#fff;z-index:1}
+.step-body{flex:1;padding-top:6px}
+.step-title{font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* ─── ARCH DIAGRAM ─── */
+.arch-container{position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--border);background:var(--bg1)}
+svg text{fill:var(--text)}
+
+/* ─── SERVICE BOXES ─── */
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.svc-box{border-radius:10px;padding:16px 18px;border:1px solid;position:relative;overflow:hidden}
+.svc-box::before{content:'';position:absolute;inset:0;background:inherit;opacity:.08}
+.svc-box .svc-icon{font-size:24px;margin-bottom:8px}
+.svc-box .svc-name{font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px}
+.svc-box .svc-desc{font-size:11px;color:var(--muted);line-height:1.6}
+.svc-box .svc-tech{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.svc-tech span{font-size:10px;font-family:'Fira Code',monospace;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.07)}
+
+/* ─── API ROUTE ─── */
+.api-route{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;transition:border-color .2s}
+.api-route:hover{border-color:rgba(0,212,255,.3)}
+.method{font-family:'Fira Code',monospace;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;min-width:64px;text-align:center;flex-shrink:0}
+.method-get{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.method-post{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.3)}
+.method-put{background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.3)}
+.method-del{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.route-path{font-family:'Fira Code',monospace;font-size:13px;color:var(--text);margin-bottom:4px}
+.route-desc{font-size:12px;color:var(--muted)}
+
+/* ─── MAPPING DESIGNER ─── */
+.mapping-designer{display:grid;grid-template-columns:1fr 60px 1fr;gap:0;background:var(--bg1);border:1px solid var(--border);border-radius:12px;overflow:hidden;min-height:480px}
+.map-panel{padding:20px;overflow-y:auto}
+.map-panel-header{font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--cyan);padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.map-connector{background:var(--bg2);border-left:1px solid var(--border);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.tree-node{padding:8px 12px;border-radius:7px;margin-bottom:4px;cursor:grab;font-size:12px;font-family:'Fira Code',monospace;display:flex;align-items:center;gap:8px;transition:all .15s;border:1px solid transparent}
+.tree-node:hover{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.2)}
+.tree-node.mapped{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.3);color:var(--green)}
+.tree-node.child{margin-left:20px}
+.tree-node.grandchild{margin-left:40px}
+.tree-node .node-type{font-size:10px;margin-left:auto;color:var(--muted);background:rgba(255,255,255,.05);padding:1px 6px;border-radius:4px}
+.target-field{padding:8px 12px;border-radius:7px;margin-bottom:4px;font-size:12px;font-family:'Fira Code',monospace;border:1px dashed var(--border);display:flex;align-items:center;gap:8px;transition:all .15s}
+.target-field.mapped{background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.4);border-style:solid}
+.target-field.required::before{content:'*';color:var(--red);font-size:14px}
+.conn-line{stroke:var(--cyan);stroke-width:2;fill:none;stroke-dasharray:4;animation:dash 1s linear infinite;opacity:.6}
+@keyframes dash{to{stroke-dashoffset:-8}}
+
+/* ─── MONITORING ─── */
+.metric-bar{height:8px;border-radius:4px;background:var(--bg3);overflow:hidden;margin-top:8px}
+.metric-fill{height:100%;border-radius:4px;transition:width 1s ease;background:linear-gradient(90deg,var(--cyan),var(--purple))}
+.chart-bar{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 4px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar-block{width:100%;border-radius:4px 4px 0 0;min-width:20px;position:relative;transition:height .8s ease;cursor:pointer}
+.bar-block:hover::after{content:attr(data-val);position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:10px;font-family:'Fira Code',monospace;background:var(--bg0);border:1px solid var(--border);padding:2px 6px;border-radius:4px;white-space:nowrap;color:var(--text)}
+.bar-label{font-size:9px;color:var(--muted);font-family:'Fira Code',monospace;text-align:center}
+
+/* ─── ERD ─── */
+.erd-table{background:var(--bg1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;break-inside:avoid}
+.erd-table-header{background:linear-gradient(90deg,var(--bg2),var(--bg3));padding:10px 16px;font-family:'Exo 2',sans-serif;font-size:12px;font-weight:700;letter-spacing:.5px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.erd-table-header .table-icon{font-size:14px}
+.erd-col{padding:8px 16px;display:grid;grid-template-columns:20px 160px 90px 1fr;gap:10px;align-items:center;border-bottom:1px solid rgba(30,50,72,.5);font-size:12px}
+.erd-col:last-child{border-bottom:none}
+.erd-col:hover{background:rgba(255,255,255,.02)}
+.col-key{font-size:10px;text-align:center}
+.col-name{font-family:'Fira Code',monospace;color:var(--text)}
+.col-type{font-family:'Fira Code',monospace;color:var(--orange);font-size:11px}
+.col-desc{color:var(--muted);font-size:11px}
+
+/* ─── ROLE MATRIX ─── */
+.role-matrix table th:first-child{background:var(--bg1)}
+.check-yes{color:var(--green);font-size:16px;display:block;text-align:center}
+.check-no{color:var(--red);font-size:16px;display:block;text-align:center}
+.check-partial{color:var(--yellow);font-size:14px;display:block;text-align:center}
+
+/* ─── SCROLL CONTAINERS ─── */
+.scroll-x{overflow-x:auto}
+.erd-columns{columns:2;gap:24px;column-fill:balance}
+@media(max-width:900px){.erd-columns{columns:1}}
+
+/* ─── DIVIDERS ─── */
+.divider{height:1px;background:var(--border);margin:28px 0}
+.section-label{font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ─── TOOLTIP ─── */
+.tip{position:relative;cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bg0);border:1px solid var(--border);color:var(--text);font-size:11px;padding:6px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:100}
+.tip:hover::after{opacity:1}
+
+/* ─── STATUS PILL ─── */
+.status{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-family:'Fira Code',monospace;font-weight:600}
+.status-received{background:rgba(0,212,255,.12);color:var(--cyan)}
+.status-processing{background:rgba(245,158,11,.12);color:var(--yellow)}
+.status-processed{background:rgba(16,185,129,.12);color:var(--green)}
+.status-error{background:rgba(239,68,68,.12);color:var(--red)}
+.status-pending{background:rgba(139,92,246,.12);color:var(--purple)}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg0)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.pulse{animation:pulse 2s infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 3s linear infinite;transform-origin:center}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">T</div>
+      <div>
+        <div class="logo-text"><span>TMS</span> EDI Integration Platform</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'Fira Code',monospace;letter-spacing:.3px">Enterprise Architecture Design v1.0</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="badge badge-green">● SCALABLE</span>
+      <span class="badge badge-cyan">MICROSERVICES</span>
+      <span class="badge badge-orange">EVENT-DRIVEN</span>
+      <span class="header-badge">ENTERPRISE GRADE</span>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs-bar" id="tabsBar">
+  <button class="tab-btn active" onclick="switchTab(0)"><span class="tnum">01</span> Architecture</button>
+  <button class="tab-btn" onclick="switchTab(1)"><span class="tnum">02</span> Database ERD</button>
+  <button class="tab-btn" onclick="switchTab(2)"><span class="tnum">03</span> Processing Flow</button>
+  <button class="tab-btn" onclick="switchTab(3)"><span class="tnum">04</span> REST APIs</button>
+  <button class="tab-btn" onclick="switchTab(4)"><span class="tnum">05</span> Mapping Designer</button>
+  <button class="tab-btn" onclick="switchTab(5)"><span class="tnum">06</span> File Ingestion</button>
+  <button class="tab-btn" onclick="switchTab(6)"><span class="tnum">07</span> AI Mapping</button>
+  <button class="tab-btn" onclick="switchTab(7)"><span class="tnum">08</span> Monitoring</button>
+  <button class="tab-btn" onclick="switchTab(8)"><span class="tnum">09</span> Error Handling</button>
+  <button class="tab-btn" onclick="switchTab(9)"><span class="tnum">10</span> Security &amp; Roles</button>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 0: SYSTEM ARCHITECTURE                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="tab0">
+  <div class="section-title">System <span>Architecture</span></div>
+  <div class="section-sub">Microservice-based, event-driven architecture supporting millions of EDI transactions per day. Each service is independently deployable, horizontally scalable, and communicates via Kafka message queues.</div>
+
+  <!-- ARCHITECTURE SVG DIAGRAM -->
+  <div class="arch-container" style="padding:32px;margin-bottom:28px">
+    <svg viewBox="0 0 1200 620" style="width:100%;font-family:'Exo 2',sans-serif">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#00d4ff" stroke-width="1.5"/>
+        </marker>
+        <marker id="arrO" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#ff6b35" stroke-width="1.5"/>
+        </marker>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <linearGradient id="gCyan" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#00d4ff" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#8b5cf6" stop-opacity=".3"/>
+        </linearGradient>
+        <linearGradient id="gOrange" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#ff6b35" stop-opacity=".3"/>
+          <stop offset="100%" stop-color="#f59e0b" stop-opacity=".2"/>
+        </linearGradient>
+      </defs>
+
+      <!-- LAYER LABELS -->
+      <rect x="10" y="8" width="120" height="22" rx="4" fill="#192640" opacity=".7"/>
+      <text x="20" y="23" font-size="10" fill="#5a7080" font-weight="600" letter-spacing="1">EXTERNAL PARTNERS</text>
+      <rect x="10" y="120" width="100" height="22" rx="4" fill="#192640" opacity=".7"/>
+      <text x="20" y="135" font-size="10" fill="#5a7080" font-weight="600" letter-spacing="1">INGESTION LAYER</text>
+      <rect x="10" y="240" width="80" height="22" rx="4" fill="#192640" opacity=".7"/>
+      <text x="20" y="255" font-size="10" fill="#5a7080" font-weight="600" letter-spacing="1">MESSAGE BUS</text>
+      <rect x="10" y="330" width="120" height="22" rx="4" fill="#192640" opacity=".7"/>
+      <text x="20" y="345" font-size="10" fill="#5a7080" font-weight="600" letter-spacing="1">PROCESSING LAYER</text>
+      <rect x="10" y="500" width="100" height="22" rx="4" fill="#192640" opacity=".7"/>
+      <text x="20" y="515" font-size="10" fill="#5a7080" font-weight="600" letter-spacing="1">PERSISTENCE LAYER</text>
+
+      <!-- EXTERNAL PARTNERS -->
+      <g transform="translate(145,20)">
+        <rect width="110" height="72" rx="8" fill="#0d1826" stroke="#1e3248" stroke-width="1.5"/>
+        <text x="55" y="28" text-anchor="middle" font-size="22">📡</text>
+        <text x="55" y="46" text-anchor="middle" font-size="11" fill="#dde4f0" font-weight="600">SFTP/FTP</text>
+        <text x="55" y="60" text-anchor="middle" font-size="9" fill="#5a7080">Polling</text>
+      </g>
+      <g transform="translate(280,20)">
+        <rect width="110" height="72" rx="8" fill="#0d1826" stroke="#1e3248" stroke-width="1.5"/>
+        <text x="55" y="28" text-anchor="middle" font-size="22">🌐</text>
+        <text x="55" y="46" text-anchor="middle" font-size="11" fill="#dde4f0" font-weight="600">REST API</text>
+        <text x="55" y="60" text-anchor="middle" font-size="9" fill="#5a7080">Webhook / Push</text>
+      </g>
+      <g transform="translate(415,20)">
+        <rect width="110" height="72" rx="8" fill="#0d1826" stroke="#1e3248" stroke-width="1.5"/>
+        <text x="55" y="28" text-anchor="middle" font-size="22">📧</text>
+        <text x="55" y="46" text-anchor="middle" font-size="11" fill="#dde4f0" font-weight="600">AS2 / Email</text>
+        <text x="55" y="60" text-anchor="middle" font-size="9" fill="#5a7080">EDI Protocol</text>
+      </g>
+      <g transform="translate(550,20)">
+        <rect width="110" height="72" rx="8" fill="#0d1826" stroke="#1e3248" stroke-width="1.5"/>
+        <text x="55" y="28" text-anchor="middle" font-size="22">📂</text>
+        <text x="55" y="46" text-anchor="middle" font-size="11" fill="#dde4f0" font-weight="600">File Upload</text>
+        <text x="55" y="60" text-anchor="middle" font-size="9" fill="#5a7080">Portal / Manual</text>
+      </g>
+
+      <!-- Arrows down to Gateway -->
+      <line x1="200" y1="92" x2="200" y2="128" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+      <line x1="335" y1="92" x2="280" y2="128" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+      <line x1="470" y1="92" x2="360" y2="128" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+      <line x1="605" y1="92" x2="440" y2="128" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+
+      <!-- EDI GATEWAY -->
+      <rect x="145" y="128" width="350" height="80" rx="10" fill="url(#gCyan)" stroke="#00d4ff" stroke-width="1.5" filter="url(#glow)"/>
+      <text x="320" y="156" text-anchor="middle" font-size="14" fill="#00d4ff" font-weight="700" letter-spacing=".5">EDI GATEWAY SERVICE</text>
+      <text x="320" y="174" text-anchor="middle" font-size="11" fill="#dde4f0">Partner ID Detection · Checksum · Dedup · Routing</text>
+      <text x="320" y="192" text-anchor="middle" font-size="10" fill="#5a7080">Spring Boot + Spring Integration</text>
+
+      <!-- Arrow to File Receiver -->
+      <line x1="320" y1="208" x2="320" y2="244" stroke="#00d4ff" stroke-width="2" marker-end="url(#arr)"/>
+
+      <!-- FILE RECEIVER + STORAGE (side by side) -->
+      <rect x="145" y="248" width="160" height="68" rx="8" fill="#0e1929" stroke="#1e3248" stroke-width="1.5"/>
+      <text x="225" y="270" text-anchor="middle" font-size="12" fill="#00d4ff" font-weight="700">FILE RECEIVER</text>
+      <text x="225" y="286" text-anchor="middle" font-size="10" fill="#dde4f0">Ingest · Validate</text>
+      <text x="225" y="300" text-anchor="middle" font-size="9" fill="#5a7080">Multipart · Streaming</text>
+
+      <rect x="320" y="248" width="175" height="68" rx="8" fill="#0e1929" stroke="#1e3248" stroke-width="1.5"/>
+      <text x="407" y="270" text-anchor="middle" font-size="12" fill="#8b5cf6" font-weight="700">FILE STORAGE SERVICE</text>
+      <text x="407" y="286" text-anchor="middle" font-size="10" fill="#dde4f0">S3 / MinIO · BLOB</text>
+      <text x="407" y="300" text-anchor="middle" font-size="9" fill="#5a7080">Audit Store · Raw Files</text>
+
+      <!-- KAFKA BUS -->
+      <rect x="145" y="348" width="350" height="60" rx="10" fill="url(#gOrange)" stroke="#ff6b35" stroke-width="2"/>
+      <text x="320" y="374" text-anchor="middle" font-size="13" fill="#ff6b35" font-weight="700" letter-spacing=".5">APACHE KAFKA — MESSAGE BUS</text>
+      <text x="320" y="393" text-anchor="middle" font-size="10" fill="#dde4f0">Topics: file.received · file.processing · file.processed · file.error</text>
+
+      <!-- Arrows from receivers to Kafka -->
+      <line x1="225" y1="316" x2="225" y2="348" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr)" opacity=".6"/>
+      <line x1="407" y1="316" x2="407" y2="348" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr)" opacity=".6"/>
+
+      <!-- Processing Services -->
+      <g transform="translate(145,440)">
+        <rect width="100" height="60" rx="7" fill="#0e1929" stroke="#1e3248" stroke-width="1"/>
+        <text x="50" y="20" text-anchor="middle" font-size="9" fill="#f59e0b" font-weight="700">STRUCTURE</text>
+        <text x="50" y="32" text-anchor="middle" font-size="9" fill="#f59e0b" font-weight="700">ANALYZER</text>
+        <text x="50" y="48" text-anchor="middle" font-size="9" fill="#5a7080">Schema Tree</text>
+      </g>
+      <g transform="translate(260,440)">
+        <rect width="100" height="60" rx="7" fill="#0e1929" stroke="#1e3248" stroke-width="1"/>
+        <text x="50" y="20" text-anchor="middle" font-size="9" fill="#00d4ff" font-weight="700">MAPPING</text>
+        <text x="50" y="32" text-anchor="middle" font-size="9" fill="#00d4ff" font-weight="700">ENGINE</text>
+        <text x="50" y="48" text-anchor="middle" font-size="9" fill="#5a7080">Rules + Transform</text>
+      </g>
+      <g transform="translate(375,440)">
+        <rect width="100" height="60" rx="7" fill="#0e1929" stroke="#1e3248" stroke-width="1"/>
+        <text x="50" y="20" text-anchor="middle" font-size="9" fill="#10b981" font-weight="700">VALIDATION</text>
+        <text x="50" y="32" text-anchor="middle" font-size="9" fill="#10b981" font-weight="700">ENGINE</text>
+        <text x="50" y="48" text-anchor="middle" font-size="9" fill="#5a7080">Rules + Schema</text>
+      </g>
+
+      <!-- Kafka to processors -->
+      <line x1="195" y1="408" x2="195" y2="440" stroke="#ff6b35" stroke-width="1.5" marker-end="url(#arrO)" opacity=".5"/>
+      <line x1="310" y1="408" x2="310" y2="440" stroke="#ff6b35" stroke-width="1.5" marker-end="url(#arrO)" opacity=".5"/>
+      <line x1="425" y1="408" x2="425" y2="440" stroke="#ff6b35" stroke-width="1.5" marker-end="url(#arrO)" opacity=".5"/>
+
+      <!-- DB LAYER -->
+      <g transform="translate(145,535)">
+        <rect width="130" height="55" rx="8" fill="#0d1826" stroke="#1e3248" stroke-width="1.5"/>
+        <text x="65" y="22" text-anchor="middle" font-size="20">🐘</text>
+        <text x="65" y="40" text-anchor="middle" font-size="11" fill="#dde4f0" font-weight="600">PostgreSQL</text>
+        <text x="65" y="53" text-anchor="middle" font-size="9" fill="#5a7080">TMS Tables</text>
+      </g>
+      <g transform="translate(295,535)">
+        <rect width="130" height="55" rx="8" fill="#0d1826" stroke="#1e3248" stroke-width="1.5"/>
+        <text x="65" y="22" text-anchor="middle" font-size="20">🔴</text>
+        <text x="65" y="40" text-anchor="middle" font-size="11" fill="#dde4f0" font-weight="600">Redis Cache</text>
+        <text x="65" y="53" text-anchor="middle" font-size="9" fill="#5a7080">Sessions + Config</text>
+      </g>
+
+      <!-- DB arrows -->
+      <line x1="210" y1="500" x2="210" y2="535" stroke="#00d4ff" stroke-width="1.5" marker-end="url(#arr)" opacity=".4"/>
+      <line x1="360" y1="500" x2="360" y2="535" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr)" opacity=".4"/>
+
+      <!-- RIGHT SIDE: MONITORING + PARTNER CONFIG + REACT -->
+      <rect x="620" y="20" width="230" height="100" rx="10" fill="#0e1929" stroke="#ec4899" stroke-width="1.5"/>
+      <text x="735" y="50" text-anchor="middle" font-size="13" fill="#ec4899" font-weight="700">REACT FRONTEND</text>
+      <text x="735" y="68" text-anchor="middle" font-size="10" fill="#dde4f0">File List · Mapping Designer</text>
+      <text x="735" y="83" text-anchor="middle" font-size="10" fill="#dde4f0">Dashboard · Error Viewer</text>
+      <text x="735" y="100" text-anchor="middle" font-size="9" fill="#5a7080">Drag-and-Drop UI</text>
+
+      <rect x="620" y="148" width="230" height="80" rx="10" fill="#0e1929" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="735" y="175" text-anchor="middle" font-size="13" fill="#f59e0b" font-weight="700">MONITORING SERVICE</text>
+      <text x="735" y="193" text-anchor="middle" font-size="10" fill="#dde4f0">Metrics · Alerts · Dashboards</text>
+      <text x="735" y="210" text-anchor="middle" font-size="9" fill="#5a7080">Prometheus + Grafana</text>
+
+      <rect x="620" y="258" width="230" height="80" rx="10" fill="#0e1929" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="735" y="285" text-anchor="middle" font-size="13" fill="#8b5cf6" font-weight="700">PARTNER CONFIG</text>
+      <text x="735" y="303" text-anchor="middle" font-size="10" fill="#dde4f0">Partner Profiles · Format Config</text>
+      <text x="735" y="318" text-anchor="middle" font-size="9" fill="#5a7080">REST-managed</text>
+
+      <rect x="620" y="368" width="230" height="80" rx="10" fill="#0e1929" stroke="#10b981" stroke-width="1.5"/>
+      <text x="735" y="395" text-anchor="middle" font-size="13" fill="#10b981" font-weight="700">PROCESSING ENGINE</text>
+      <text x="735" y="413" text-anchor="middle" font-size="10" fill="#dde4f0">Parallel Workers · Batch · Retry</text>
+      <text x="735" y="428" text-anchor="middle" font-size="9" fill="#5a7080">Spring Batch + Quartz</text>
+
+      <rect x="620" y="478" width="230" height="80" rx="10" fill="#0e1929" stroke="#00d4ff" stroke-width="1.5"/>
+      <text x="735" y="505" text-anchor="middle" font-size="13" fill="#00d4ff" font-weight="700">API GATEWAY</text>
+      <text x="735" y="523" text-anchor="middle" font-size="10" fill="#dde4f0">JWT Auth · Rate Limiting</text>
+      <text x="735" y="540" text-anchor="middle" font-size="9" fill="#5a7080">Spring Cloud Gateway</text>
+
+      <!-- Right connections -->
+      <line x1="735" y1="120" x2="735" y2="148" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+      <line x1="735" y1="228" x2="735" y2="258" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+      <line x1="735" y1="338" x2="735" y2="368" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+      <line x1="735" y1="448" x2="735" y2="478" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr)" opacity=".5"/>
+
+      <!-- Cross connections Kafka → Processing Engine -->
+      <line x1="495" y1="378" x2="620" y2="408" stroke="#ff6b35" stroke-width="1.5" stroke-dasharray="4" opacity=".4"/>
+
+      <!-- KUBERNETES -->
+      <rect x="860" y="20" width="300" height="570" rx="12" fill="rgba(0,212,255,.02)" stroke="rgba(0,212,255,.1)" stroke-width="1.5" stroke-dasharray="6"/>
+      <text x="1010" y="48" text-anchor="middle" font-size="12" fill="#5a7080" font-weight="700" letter-spacing="1">KUBERNETES CLUSTER</text>
+      <g transform="translate(880,70)">
+        <rect width="240" height="48" rx="7" fill="#0d1826" stroke="#1e3248"/>
+        <text x="120" y="20" text-anchor="middle" font-size="10" fill="#00d4ff" font-weight="700">HORIZONTAL POD AUTOSCALER</text>
+        <text x="120" y="36" text-anchor="middle" font-size="9" fill="#5a7080">Scale on CPU/Memory/Kafka lag</text>
+      </g>
+      <g transform="translate(880,142)">
+        <rect width="240" height="48" rx="7" fill="#0d1826" stroke="#1e3248"/>
+        <text x="120" y="20" text-anchor="middle" font-size="10" fill="#10b981" font-weight="700">LOAD BALANCER</text>
+        <text x="120" y="36" text-anchor="middle" font-size="9" fill="#5a7080">NGINX Ingress Controller</text>
+      </g>
+      <g transform="translate(880,214)">
+        <rect width="240" height="48" rx="7" fill="#0d1826" stroke="#1e3248"/>
+        <text x="120" y="20" text-anchor="middle" font-size="10" fill="#f59e0b" font-weight="700">SERVICE MESH</text>
+        <text x="120" y="36" text-anchor="middle" font-size="9" fill="#5a7080">Istio — mTLS + tracing</text>
+      </g>
+      <g transform="translate(880,286)">
+        <rect width="240" height="48" rx="7" fill="#0d1826" stroke="#1e3248"/>
+        <text x="120" y="20" text-anchor="middle" font-size="10" fill="#8b5cf6" font-weight="700">CONFIG MAP / SECRETS</text>
+        <text x="120" y="36" text-anchor="middle" font-size="9" fill="#5a7080">HashiCorp Vault integration</text>
+      </g>
+      <g transform="translate(880,358)">
+        <rect width="240" height="48" rx="7" fill="#0d1826" stroke="#1e3248"/>
+        <text x="120" y="20" text-anchor="middle" font-size="10" fill="#ec4899" font-weight="700">CI/CD PIPELINE</text>
+        <text x="120" y="36" text-anchor="middle" font-size="9" fill="#5a7080">GitHub Actions + ArgoCD</text>
+      </g>
+      <g transform="translate(880,430)">
+        <rect width="240" height="48" rx="7" fill="#0d1826" stroke="#1e3248"/>
+        <text x="120" y="20" text-anchor="middle" font-size="10" fill="#00d4ff" font-weight="700">OBSERVABILITY</text>
+        <text x="120" y="36" text-anchor="middle" font-size="9" fill="#5a7080">Jaeger + Loki + Prometheus</text>
+      </g>
+      <g transform="translate(880,502)">
+        <rect width="240" height="48" rx="7" fill="#0d1826" stroke="#1e3248"/>
+        <text x="120" y="20" text-anchor="middle" font-size="10" fill="#ff6b35" font-weight="700">OBJECT STORAGE</text>
+        <text x="120" y="36" text-anchor="middle" font-size="9" fill="#5a7080">MinIO / AWS S3 — raw files</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- SERVICE CARDS -->
+  <div class="section-label">Microservices Inventory</div>
+  <div class="svc-grid">
+    <div class="svc-box" style="border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.04)">
+      <div class="svc-icon">🔌</div>
+      <div class="svc-name" style="color:var(--cyan)">EDI Gateway Service</div>
+      <div class="svc-desc">Unified entry point. Partner identification, auth, rate limiting, protocol routing (SFTP/REST/AS2/Email).</div>
+      <div class="svc-tech"><span>Spring Boot</span><span>Spring Integration</span><span>Camel</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.04)">
+      <div class="svc-icon">📥</div>
+      <div class="svc-name" style="color:var(--green)">File Receiver Service</div>
+      <div class="svc-desc">Receives, validates checksums, detects duplicates, writes to storage, emits Kafka events.</div>
+      <div class="svc-tech"><span>Spring Boot</span><span>Kafka Producer</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.04)">
+      <div class="svc-icon">💾</div>
+      <div class="svc-name" style="color:var(--purple)">File Storage Service</div>
+      <div class="svc-desc">Immutable raw file store with audit trail. Manages TMS_FILES table and blob storage.</div>
+      <div class="svc-tech"><span>MinIO</span><span>PostgreSQL</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.04)">
+      <div class="svc-icon">🔬</div>
+      <div class="svc-name" style="color:var(--yellow)">Structure Analyzer</div>
+      <div class="svc-desc">Parses files, generates hierarchical schema trees with field paths. Drives the mapping UI.</div>
+      <div class="svc-tech"><span>Jackson</span><span>JAXB</span><span>OpenCSV</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.04)">
+      <div class="svc-icon">🗺️</div>
+      <div class="svc-name" style="color:var(--cyan)">Mapping Engine</div>
+      <div class="svc-desc">Applies configured mapping rules, transformations, lookups, and conditions to produce canonical output.</div>
+      <div class="svc-tech"><span>JUEL</span><span>Drools</span><span>Spring Batch</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.04)">
+      <div class="svc-icon">✅</div>
+      <div class="svc-name" style="color:var(--green)">Validation Engine</div>
+      <div class="svc-desc">Validates canonical data against business rules, mandatory fields, data types, and partner-specific constraints.</div>
+      <div class="svc-tech"><span>Bean Validation</span><span>Drools</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(255,107,53,.4);background:rgba(255,107,53,.04)">
+      <div class="svc-icon">⚙️</div>
+      <div class="svc-name" style="color:var(--orange)">Processing Engine</div>
+      <div class="svc-desc">Orchestrates end-to-end workflow with parallel workers, retry logic, and batch execution modes.</div>
+      <div class="svc-tech"><span>Spring Batch</span><span>Quartz</span><span>Kafka</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(236,72,153,.4);background:rgba(236,72,153,.04)">
+      <div class="svc-icon">📊</div>
+      <div class="svc-name" style="color:var(--pink)">Monitoring Service</div>
+      <div class="svc-desc">Real-time metrics, alerting, processing latency tracking, partner health scores.</div>
+      <div class="svc-tech"><span>Prometheus</span><span>Grafana</span><span>Micrometer</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.04)">
+      <div class="svc-icon">🤝</div>
+      <div class="svc-name" style="color:var(--purple)">Partner Config Service</div>
+      <div class="svc-desc">Manages partner profiles, connection configs, format preferences, and SLA parameters.</div>
+      <div class="svc-tech"><span>Spring Boot</span><span>Redis</span></div>
+    </div>
+    <div class="svc-box" style="border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.04)">
+      <div class="svc-icon">🤖</div>
+      <div class="svc-name" style="color:var(--cyan)">AI Mapping Assistant</div>
+      <div class="svc-desc">ML-powered field suggestion engine using field name similarity, historical patterns, and type inference.</div>
+      <div class="svc-tech"><span>Python / FastAPI</span><span>Transformers</span></div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="divider"></div>
+  <div class="section-label">Technology Stack</div>
+  <div class="grid-4">
+    <div class="card"><div class="card-title">Backend</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div><span class="badge badge-cyan">Java 17+</span> <span style="color:var(--muted);font-size:11px">Core Language</span></div>
+        <div><span class="badge badge-cyan">Spring Boot 3</span> <span style="color:var(--muted);font-size:11px">Framework</span></div>
+        <div><span class="badge badge-cyan">Spring Batch</span> <span style="color:var(--muted);font-size:11px">ETL</span></div>
+        <div><span class="badge badge-cyan">Spring Security</span> <span style="color:var(--muted);font-size:11px">Auth</span></div>
+        <div><span class="badge badge-cyan">Quartz</span> <span style="color:var(--muted);font-size:11px">Scheduler</span></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Messaging & Data</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div><span class="badge badge-orange">Apache Kafka</span> <span style="color:var(--muted);font-size:11px">Message Bus</span></div>
+        <div><span class="badge badge-orange">PostgreSQL 15</span> <span style="color:var(--muted);font-size:11px">RDBMS</span></div>
+        <div><span class="badge badge-orange">Redis</span> <span style="color:var(--muted);font-size:11px">Cache / Sessions</span></div>
+        <div><span class="badge badge-orange">MinIO</span> <span style="color:var(--muted);font-size:11px">Object Storage</span></div>
+        <div><span class="badge badge-orange">Flyway</span> <span style="color:var(--muted);font-size:11px">DB Migrations</span></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Frontend & DevOps</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div><span class="badge badge-purple">React 18</span> <span style="color:var(--muted);font-size:11px">UI Framework</span></div>
+        <div><span class="badge badge-purple">TypeScript</span> <span style="color:var(--muted);font-size:11px">Type Safety</span></div>
+        <div><span class="badge badge-purple">React DnD</span> <span style="color:var(--muted);font-size:11px">Drag & Drop</span></div>
+        <div><span class="badge badge-purple">Recharts</span> <span style="color:var(--muted);font-size:11px">Charts</span></div>
+        <div><span class="badge badge-purple">Kubernetes</span> <span style="color:var(--muted);font-size:11px">Orchestration</span></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Observability</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:12px">
+        <div><span class="badge badge-green">Prometheus</span> <span style="color:var(--muted);font-size:11px">Metrics</span></div>
+        <div><span class="badge badge-green">Grafana</span> <span style="color:var(--muted);font-size:11px">Dashboards</span></div>
+        <div><span class="badge badge-green">Jaeger</span> <span style="color:var(--muted);font-size:11px">Tracing</span></div>
+        <div><span class="badge badge-green">Loki</span> <span style="color:var(--muted);font-size:11px">Log Aggregation</span></div>
+        <div><span class="badge badge-green">ELK Stack</span> <span style="color:var(--muted);font-size:11px">Search Logs</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 1: DATABASE ERD                                 -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab1">
+  <div class="section-title">Database <span>Schema (ERD)</span></div>
+  <div class="section-sub">PostgreSQL normalized schema. All tables include audit timestamps, partner references, and soft-delete support. Primary keys use BIGSERIAL for performance at scale.</div>
+
+  <div class="erd-columns">
+
+    <!-- TMS_FILES -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">📁</span> TMS_FILES <span class="badge badge-cyan" style="font-size:10px;margin-left:auto">Core</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">entry_no</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Primary key, auto-increment</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">file_name</span><span class="col-type">VARCHAR(500)</span><span class="col-desc">Original filename</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">file_type</span><span class="col-type">VARCHAR(20)</span><span class="col-desc">XML/JSON/CSV/X12/EDIFACT/Excel</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">partner_id</span><span class="col-type">BIGINT</span><span class="col-desc">→ EDI_PARTNERS</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">received_timestamp</span><span class="col-type">TIMESTAMPTZ</span><span class="col-desc">UTC receipt time</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">processing_mode</span><span class="col-type">VARCHAR(10)</span><span class="col-desc">AUTO / MANUAL / SCHEDULED</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">status</span><span class="col-type">VARCHAR(20)</span><span class="col-desc">Received→Processing→Processed/Error</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">file_content</span><span class="col-type">BYTEA</span><span class="col-desc">Raw file blob (or S3 ref)</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">file_size</span><span class="col-type">BIGINT</span><span class="col-desc">Size in bytes</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">checksum</span><span class="col-type">VARCHAR(64)</span><span class="col-desc">SHA-256 hash for dedup</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">storage_path</span><span class="col-type">VARCHAR(1000)</span><span class="col-desc">S3/MinIO object path</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">error_message</span><span class="col-type">TEXT</span><span class="col-desc">Last error description</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">retry_count</span><span class="col-type">INT</span><span class="col-desc">Processing retry attempts</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">processed_timestamp</span><span class="col-type">TIMESTAMPTZ</span><span class="col-desc">Processing completion time</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">is_deleted</span><span class="col-type">BOOLEAN</span><span class="col-desc">Soft delete flag</span></div>
+    </div>
+
+    <!-- MAPPING_HEADER -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">🗺️</span> MAPPING_HEADER <span class="badge badge-purple" style="font-size:10px;margin-left:auto">Mapping</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">mapping_id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Unique mapping identifier</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">partner_id</span><span class="col-type">BIGINT</span><span class="col-desc">→ EDI_PARTNERS</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">file_type</span><span class="col-type">VARCHAR(20)</span><span class="col-desc">Target format type</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">mapping_name</span><span class="col-type">VARCHAR(200)</span><span class="col-desc">Human-readable name</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">version</span><span class="col-type">INT</span><span class="col-desc">Schema version number</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">active_flag</span><span class="col-type">BOOLEAN</span><span class="col-desc">Is this the live mapping?</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">created_date</span><span class="col-type">TIMESTAMPTZ</span><span class="col-desc">Creation timestamp</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">created_by</span><span class="col-type">VARCHAR(100)</span><span class="col-desc">Operator username</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">description</span><span class="col-type">TEXT</span><span class="col-desc">Notes on this mapping</span></div>
+    </div>
+
+    <!-- MAPPING_LINES -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">📋</span> MAPPING_LINES <span class="badge badge-purple" style="font-size:10px;margin-left:auto">Mapping</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">mapping_line_id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Line identifier</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">mapping_id</span><span class="col-type">BIGINT</span><span class="col-desc">→ MAPPING_HEADER</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">source_field_path</span><span class="col-type">VARCHAR(500)</span><span class="col-desc">/Order/Header/OrderNo</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">target_field</span><span class="col-type">VARCHAR(200)</span><span class="col-desc">canonical.external_order_id</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">transformation_rule</span><span class="col-type">VARCHAR(200)</span><span class="col-desc">UPPER / DATE_FORMAT / IF / etc.</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">transformation_params</span><span class="col-type">JSONB</span><span class="col-desc">Params for transformation</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">default_value</span><span class="col-type">VARCHAR(500)</span><span class="col-desc">Fallback if source null</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">is_required</span><span class="col-type">BOOLEAN</span><span class="col-desc">Fail if missing</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">sequence</span><span class="col-type">INT</span><span class="col-desc">Execution order</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">condition_rule</span><span class="col-type">TEXT</span><span class="col-desc">IF expression (JUEL)</span></div>
+    </div>
+
+    <!-- EDI_ORDER_HEADER -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">📦</span> EDI_ORDER_HEADER <span class="badge badge-green" style="font-size:10px;margin-left:auto">Staging</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Auto PK</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">entry_no</span><span class="col-type">BIGINT</span><span class="col-desc">→ TMS_FILES</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">external_order_id</span><span class="col-type">VARCHAR(100)</span><span class="col-desc">Partner's order ref</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">partner_id</span><span class="col-type">BIGINT</span><span class="col-desc">→ EDI_PARTNERS</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">customer_code</span><span class="col-type">VARCHAR(50)</span><span class="col-desc">TMS customer ref</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">order_date</span><span class="col-type">DATE</span><span class="col-desc">Order creation date</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">requested_delivery_date</span><span class="col-type">DATE</span><span class="col-desc">Delivery expectation</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">origin_address</span><span class="col-type">TEXT</span><span class="col-desc">Pickup address</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">destination_address</span><span class="col-type">TEXT</span><span class="col-desc">Delivery address</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">status</span><span class="col-type">VARCHAR(30)</span><span class="col-desc">Staging status</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">created_at</span><span class="col-type">TIMESTAMPTZ</span><span class="col-desc">Insert timestamp</span></div>
+    </div>
+
+    <!-- EDI_ORDER_LINES -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">📝</span> EDI_ORDER_LINES <span class="badge badge-green" style="font-size:10px;margin-left:auto">Staging</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Auto PK</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">order_header_id</span><span class="col-type">BIGINT</span><span class="col-desc">→ EDI_ORDER_HEADER</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">entry_no</span><span class="col-type">BIGINT</span><span class="col-desc">→ TMS_FILES</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">line_number</span><span class="col-type">INT</span><span class="col-desc">Line sequence</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">item_code</span><span class="col-type">VARCHAR(100)</span><span class="col-desc">Product / commodity code</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">description</span><span class="col-type">TEXT</span><span class="col-desc">Item description</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">quantity</span><span class="col-type">NUMERIC(18,4)</span><span class="col-desc">Ordered quantity</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">unit_of_measure</span><span class="col-type">VARCHAR(20)</span><span class="col-desc">KG / PAL / CTN etc.</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">weight_kg</span><span class="col-type">NUMERIC(12,3)</span><span class="col-desc">Total weight</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">volume_m3</span><span class="col-type">NUMERIC(12,4)</span><span class="col-desc">Volume cubic meters</span></div>
+    </div>
+
+    <!-- EDI_CARGO_DETAILS -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">🚢</span> EDI_CARGO_DETAILS <span class="badge badge-green" style="font-size:10px;margin-left:auto">Staging</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Auto PK</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">entry_no</span><span class="col-type">BIGINT</span><span class="col-desc">→ TMS_FILES</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">cargo_type</span><span class="col-type">VARCHAR(50)</span><span class="col-desc">Container/Pallet/Parcel</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">total_weight</span><span class="col-type">NUMERIC(14,3)</span><span class="col-desc">Gross weight KG</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">total_volume</span><span class="col-type">NUMERIC(14,4)</span><span class="col-desc">Volume M3</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">hazmat_flag</span><span class="col-type">BOOLEAN</span><span class="col-desc">Dangerous goods</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">temperature_req</span><span class="col-type">VARCHAR(30)</span><span class="col-desc">Cold chain requirements</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">special_instructions</span><span class="col-type">TEXT</span><span class="col-desc">Handling notes</span></div>
+    </div>
+
+    <!-- EDI_COSTS / REVENUE -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">💰</span> EDI_COSTS &amp; EDI_REVENUE <span class="badge badge-yellow" style="font-size:10px;margin-left:auto">Financial</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Auto PK</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">entry_no</span><span class="col-type">BIGINT</span><span class="col-desc">→ TMS_FILES</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">charge_type</span><span class="col-type">VARCHAR(50)</span><span class="col-desc">FREIGHT / FUEL / HANDLING</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">amount</span><span class="col-type">NUMERIC(14,2)</span><span class="col-desc">Monetary value</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">currency</span><span class="col-type">CHAR(3)</span><span class="col-desc">ISO 4217 code</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">vat_amount</span><span class="col-type">NUMERIC(12,2)</span><span class="col-desc">Tax amount</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">external_charge_code</span><span class="col-type">VARCHAR(50)</span><span class="col-desc">Partner charge ref</span></div>
+    </div>
+
+    <!-- EDI_ERROR_LOG -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">🚨</span> EDI_ERROR_LOG <span class="badge badge-red" style="font-size:10px;margin-left:auto">Errors</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">error_id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Auto PK</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">entry_no</span><span class="col-type">BIGINT</span><span class="col-desc">→ TMS_FILES</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">mapping_line_id</span><span class="col-type">BIGINT</span><span class="col-desc">→ MAPPING_LINES (nullable)</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">error_type</span><span class="col-type">VARCHAR(50)</span><span class="col-desc">MISSING_FIELD / TRANSFORM_FAIL</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">error_code</span><span class="col-type">VARCHAR(20)</span><span class="col-desc">EDI-001 through EDI-999</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">error_message</span><span class="col-type">TEXT</span><span class="col-desc">Human-readable description</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">field_path</span><span class="col-type">VARCHAR(500)</span><span class="col-desc">Source path that failed</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">timestamp</span><span class="col-type">TIMESTAMPTZ</span><span class="col-desc">Error occurrence time</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">resolved_flag</span><span class="col-type">BOOLEAN</span><span class="col-desc">Manually resolved?</span></div>
+    </div>
+
+    <!-- EDI_PARTNERS -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">🤝</span> EDI_PARTNERS <span class="badge badge-cyan" style="font-size:10px;margin-left:auto">Config</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">partner_id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Auto PK</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">partner_code</span><span class="col-type">VARCHAR(50)</span><span class="col-desc">Unique business code</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">partner_name</span><span class="col-type">VARCHAR(200)</span><span class="col-desc">Full company name</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">default_format</span><span class="col-type">VARCHAR(20)</span><span class="col-desc">Preferred EDI format</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">processing_mode</span><span class="col-type">VARCHAR(10)</span><span class="col-desc">AUTO / MANUAL / SCHEDULED</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">sftp_config</span><span class="col-type">JSONB</span><span class="col-desc">Connection parameters</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">active</span><span class="col-type">BOOLEAN</span><span class="col-desc">Partner active status</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">sla_hours</span><span class="col-type">INT</span><span class="col-desc">Processing SLA in hours</span></div>
+    </div>
+
+    <!-- CANONICAL MODEL -->
+    <div class="erd-table">
+      <div class="erd-table-header"><span class="table-icon">⭐</span> CANONICAL_ORDER <span class="badge badge-orange" style="font-size:10px;margin-left:auto">Canonical</span></div>
+      <div class="erd-col"><span class="col-key pk" style="font-size:9px">PK</span><span class="col-name">canonical_id</span><span class="col-type">BIGSERIAL</span><span class="col-desc">Auto PK</span></div>
+      <div class="erd-col"><span class="col-key fk" style="font-size:9px">FK</span><span class="col-name">entry_no</span><span class="col-type">BIGINT</span><span class="col-desc">→ TMS_FILES</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">external_order_id</span><span class="col-type">VARCHAR(100)</span><span class="col-desc">Partner's order ref</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">customer_code</span><span class="col-type">VARCHAR(50)</span><span class="col-desc">TMS customer ref</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">order_date</span><span class="col-type">DATE</span><span class="col-desc">Normalized date</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">lines</span><span class="col-type">JSONB</span><span class="col-desc">Canonical order lines array</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">cargo</span><span class="col-type">JSONB</span><span class="col-desc">Canonical cargo object</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">transport_request</span><span class="col-type">JSONB</span><span class="col-desc">Route + mode requirements</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">costs</span><span class="col-type">JSONB</span><span class="col-desc">Cost breakdown array</span></div>
+      <div class="erd-col"><span class="col-key"></span><span class="col-name">raw_data</span><span class="col-type">JSONB</span><span class="col-desc">Full original parsed data</span></div>
+    </div>
+
+  </div><!-- end erd-columns -->
+
+  <!-- CANONICAL MODEL DIAGRAM -->
+  <div class="divider"></div>
+  <div class="section-label">Canonical Data Model — Hub-and-Spoke Pattern</div>
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;gap:32px;flex-wrap:wrap">
+      <div style="flex:1;min-width:280px">
+        <div style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;color:var(--orange);margin-bottom:16px">Why Canonical Model?</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:16px">
+          Without canonical model: N partners × M targets = N×M mappings<br>
+          With canonical model: N partners + M targets = N+M mappings<br><br>
+          <strong style="color:var(--text)">Example:</strong> 10 partners, 5 TMS targets<br>
+          Without: 50 mapping configurations<br>
+          With: 15 mapping configurations
+        </div>
+        <div style="background:var(--bg2);border-radius:8px;padding:14px">
+          <div style="font-size:11px;color:var(--muted);font-family:'Fira Code',monospace;line-height:2">
+            Partner_A (XML) ──┐<br>
+            Partner_B (CSV) ──┤<br>
+            Partner_C (X12) ──┼──→ CANONICAL → TMS_Tables<br>
+            Partner_D (JSON) ─┤<br>
+            Partner_E (EDIFACT)┘
+          </div>
+        </div>
+      </div>
+      <div style="flex:2;min-width:340px">
+        <div style="font-family:'Exo 2',sans-serif;font-size:13px;font-weight:700;color:var(--orange);margin-bottom:16px">Canonical Model Entities</div>
+        <div class="grid-3" style="gap:12px">
+          <div style="background:var(--bg2);border-radius:8px;padding:12px;border:1px solid rgba(255,107,53,.2)">
+            <div style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;color:var(--orange);margin-bottom:8px">Canonical_Order</div>
+            <div style="font-size:10px;font-family:'Fira Code',monospace;color:var(--muted);line-height:1.8">external_order_id<br>customer_code<br>order_date<br>incoterm<br>priority</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:12px;border:1px solid rgba(0,212,255,.2)">
+            <div style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:8px">Canonical_Order_Line</div>
+            <div style="font-size:10px;font-family:'Fira Code',monospace;color:var(--muted);line-height:1.8">line_no<br>item_code<br>quantity<br>uom<br>weight_kg</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:12px;border:1px solid rgba(139,92,246,.2)">
+            <div style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;color:var(--purple);margin-bottom:8px">Canonical_Cargo</div>
+            <div style="font-size:10px;font-family:'Fira Code',monospace;color:var(--muted);line-height:1.8">cargo_type<br>total_weight<br>volume_m3<br>hazmat<br>temperature</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:12px;border:1px solid rgba(16,185,129,.2)">
+            <div style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">Canonical_Transport</div>
+            <div style="font-size:10px;font-family:'Fira Code',monospace;color:var(--muted);line-height:1.8">origin<br>destination<br>mode<br>pickup_date<br>delivery_date</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:8px;padding:12px;border:1px solid rgba(245,158,11,.2)">
+            <div style="font-family:'Exo 2',sans-serif;font-size:11px;font-weight:700;color:var(--yellow);margin-bottom:8px">Canonical_Cost</div>
+            <div style="font-size:10px;font-family:'Fira Code',monospace;color:var(--muted);line-height:1.8">charge_type<br>amount<br>currency<br>vat<br>basis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 2: PROCESSING FLOW                              -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab2">
+  <div class="section-title">Processing <span>Workflow</span></div>
+  <div class="section-sub">End-to-end pipeline from file receipt to TMS staging table insertion. Each step is independently monitored, retry-capable, and emits Kafka events for downstream consumers.</div>
+
+  <div class="grid-2" style="gap:32px">
+    <div>
+      <div class="section-label">Main Processing Pipeline</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-circle">01</div>
+          <div class="step-body">
+            <div class="step-title">File Receipt <span class="badge badge-cyan" style="margin-left:8px;font-size:10px">EDI Gateway</span></div>
+            <div class="step-desc">File arrives via SFTP/FTP/REST/AS2/Email. Gateway authenticates partner via API key or certificate. Partner code identified from path or header. Event: <code style="font-family:'Fira Code',monospace;font-size:11px;color:var(--cyan)">file.received</code></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle">02</div>
+          <div class="step-body">
+            <div class="step-title">Validation &amp; Storage <span class="badge badge-purple" style="margin-left:8px;font-size:10px">File Receiver</span></div>
+            <div class="step-desc">Compute SHA-256 checksum. Check for duplicates via checksum index. Validate file size limits. Store raw file to MinIO/S3. Insert record into TMS_FILES with status=RECEIVED.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle">03</div>
+          <div class="step-body">
+            <div class="step-title">Format Detection &amp; Analysis <span class="badge badge-yellow" style="margin-left:8px;font-size:10px">Structure Analyzer</span></div>
+            <div class="step-desc">Auto-detect file format from extension + magic bytes. Parse file. Generate hierarchical schema tree with full field paths. Cache schema in Redis for mapping UI. Event: <code style="font-family:'Fira Code',monospace;font-size:11px;color:var(--cyan)">file.analyzed</code></div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle">04</div>
+          <div class="step-body">
+            <div class="step-title">Mapping Template Lookup <span class="badge badge-cyan" style="margin-left:8px;font-size:10px">Mapping Engine</span></div>
+            <div class="step-desc">Query MAPPING_HEADER for active mapping matching (partner_id + file_type). If no mapping exists and mode=AUTO → trigger AI auto-mapping suggestions. If mode=MANUAL → halt and notify operator.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle">05</div>
+          <div class="step-body">
+            <div class="step-title">Rule Execution &amp; Transformation</div>
+            <div class="step-desc">Apply mapping rules in sequence order. Execute transformations: DATE_FORMAT, UPPER, CONCAT, IF/ELSE, LOOKUP. Handle defaults and conditionals. Build canonical data structure in memory.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle">06</div>
+          <div class="step-body">
+            <div class="step-title">Canonical Validation <span class="badge badge-green" style="margin-left:8px;font-size:10px">Validation Engine</span></div>
+            <div class="step-desc">Validate mandatory fields (external_order_id, customer_code, order_date). Check data types, formats, business rules. Check for duplicate order IDs per partner. Log all validation errors to EDI_ERROR_LOG.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle">07</div>
+          <div class="step-body">
+            <div class="step-title">Staging Table Insertion <span class="badge badge-orange" style="margin-left:8px;font-size:10px">Processing Engine</span></div>
+            <div class="step-desc">Transactional insert into EDI_ORDER_HEADER, EDI_ORDER_LINES, EDI_CARGO_DETAILS, EDI_COSTS. Use batch inserts for performance (configurable batch size). Update TMS_FILES status=PROCESSED.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle">08</div>
+          <div class="step-body">
+            <div class="step-title">TMS Integration</div>
+            <div class="step-desc">Post-processing hook triggers TMS import procedures. Canonical data promoted to live TMS order tables. Confirmation event sent back to partner if configured. Status updated, metrics published to Prometheus.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Processing Modes</div>
+      <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:28px">
+        <div class="card" style="border-color:rgba(0,212,255,.3)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(0,212,255,.15);display:flex;align-items:center;justify-content:center;font-size:20px">⚡</div>
+            <div>
+              <div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--cyan)">AUTO Mode</div>
+              <div style="font-size:11px;color:var(--muted)">Zero-touch processing</div>
+            </div>
+            <span class="badge badge-cyan" style="margin-left:auto">processing_mode = AUTO</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">File arrives → immediately consumed by Kafka consumer → full pipeline executed automatically → status updated. No human intervention required. Ideal for trusted partners with stable formats.</div>
+        </div>
+        <div class="card" style="border-color:rgba(139,92,246,.3)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(139,92,246,.15);display:flex;align-items:center;justify-content:center;font-size:20px">👆</div>
+            <div>
+              <div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--purple)">MANUAL Mode</div>
+              <div style="font-size:11px;color:var(--muted)">Operator-triggered processing</div>
+            </div>
+            <span class="badge badge-purple" style="margin-left:auto">processing_mode = MANUAL</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">File stored as PENDING. Appears in File List screen awaiting operator action. Operator reviews file in viewer, confirms mapping, then clicks "Process" button → triggers pipeline via <code style="color:var(--purple);font-family:'Fira Code',monospace">POST /api/files/{id}/process</code>.</div>
+        </div>
+        <div class="card" style="border-color:rgba(245,158,11,.3)">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(245,158,11,.15);display:flex;align-items:center;justify-content:center;font-size:20px">🕐</div>
+            <div>
+              <div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--yellow)">SCHEDULED Mode</div>
+              <div style="font-size:11px;color:var(--muted)">Cron-based batch processing</div>
+            </div>
+            <span class="badge badge-yellow" style="margin-left:auto">processing_mode = SCHEDULED</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">Files accumulate during the day. Quartz scheduler triggers batch job at configured cron expression (e.g., <code style="color:var(--yellow);font-family:'Fira Code',monospace">0 0 2 * * ?</code> = 2AM daily). Spring Batch processes all pending files in optimized bulk.</div>
+        </div>
+      </div>
+
+      <div class="section-label">Retry Logic</div>
+      <div class="card">
+        <div style="font-size:12px;color:var(--muted);line-height:1.9">
+          On processing failure, the system:<br>
+          <span style="color:var(--text)">1.</span> Logs error to EDI_ERROR_LOG with full context<br>
+          <span style="color:var(--text)">2.</span> Increments retry_count on TMS_FILES<br>
+          <span style="color:var(--text)">3.</span> Schedules retry with exponential backoff (1m → 5m → 15m → 1h)<br>
+          <span style="color:var(--text)">4.</span> After max_retries (configurable, default 3) → status = ERROR<br>
+          <span style="color:var(--text)">5.</span> Dead Letter Queue (DLQ) in Kafka holds failed messages<br>
+          <span style="color:var(--text)">6.</span> Alert sent to monitoring dashboard<br>
+          <span style="color:var(--text)">7.</span> Operator can manually retry from Error Viewer UI
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:20px">Parser Plugin Architecture</div>
+      <div class="card">
+        <div class="code-block" style="font-size:11px">
+<span class="kw">public interface</span> <span class="type">FileParser</span> {
+  <span class="fn">ParsedDocument</span> parse(InputStream stream,
+                       PartnerConfig config);
+  <span class="type">SchemaTree</span>      <span class="fn">analyzeStructure</span>(ParsedDocument doc);
+  <span class="type">List</span>&lt;String&gt;     <span class="fn">getSupportedFormats</span>();
+}
+
+<span class="cmt">// Implementations:</span>
+<span class="type">XmlFileParser</span>      <span class="cmt">// JAXB + DOM</span>
+<span class="type">JsonFileParser</span>     <span class="cmt">// Jackson</span>
+<span class="type">CsvFileParser</span>      <span class="cmt">// OpenCSV</span>
+<span class="type">X12FileParser</span>      <span class="cmt">// Smooks</span>
+<span class="type">EdifactFileParser</span>  <span class="cmt">// Smooks</span>
+<span class="type">ExcelFileParser</span>    <span class="cmt">// Apache POI</span>
+<span class="type">TxtFileParser</span>      <span class="cmt">// Custom delimited</span>
+
+<span class="cmt">// New formats = implement interface + register bean</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 3: REST APIS                                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab3">
+  <div class="section-title">REST <span>API Reference</span></div>
+  <div class="section-sub">OpenAPI 3.0 compliant REST APIs. All endpoints require JWT Bearer authentication. Rate limiting applied per partner. Responses use HAL+JSON for hypermedia.</div>
+
+  <div class="grid-2">
+    <div>
+      <div class="section-label">File Management APIs</div>
+
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/files</div>
+          <div class="route-desc">List all files with filtering and pagination. Supports ?status=PENDING&partnerId=42&page=0&size=50&sort=receivedTimestamp,desc</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/files/{entryNo}</div>
+          <div class="route-desc">Get file details including status, error messages, processing history, and metadata.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/files/{entryNo}/download</div>
+          <div class="route-desc">Download raw file content. Requires DOWNLOAD permission. Audit logged.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/files/{entryNo}/structure</div>
+          <div class="route-desc">Return analyzed schema tree with all field paths. Used by mapping designer UI.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/files/{entryNo}/process</div>
+          <div class="route-desc">Manually trigger processing for a specific file. Body: { "mappingId": 42, "mode": "MANUAL" }</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/files/{entryNo}/retry</div>
+          <div class="route-desc">Retry failed file processing. Resets retry_count and requeues to Kafka.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-del">DELETE</div>
+        <div>
+          <div class="route-path">/api/v1/files/{entryNo}</div>
+          <div class="route-desc">Soft-delete a file (sets is_deleted=true). Requires ADMIN role. Audit logged.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/files/upload</div>
+          <div class="route-desc">Manual file upload via multipart/form-data. Body: file + partnerId + processingMode</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Monitoring & Error APIs</div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/errors</div>
+          <div class="route-desc">List errors with filter support: ?entryNo=&type=MISSING_FIELD&resolved=false</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-put">PUT</div>
+        <div>
+          <div class="route-path">/api/v1/errors/{errorId}/resolve</div>
+          <div class="route-desc">Mark error as resolved manually. Body: { "note": "Fixed by remapping" }</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/monitoring/stats</div>
+          <div class="route-desc">Return processing statistics: counts by status, partner, time window. Used by dashboard.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/monitoring/throughput</div>
+          <div class="route-desc">Time-series throughput data: files/hour, records/minute over last 24h.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Mapping Management APIs</div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/mappings</div>
+          <div class="route-desc">List all mapping templates. Supports ?partnerId=&fileType=XML&active=true</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/mappings/{mappingId}</div>
+          <div class="route-desc">Full mapping detail including all mapping lines and transformation rules.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/mappings</div>
+          <div class="route-desc">Create new mapping template. Audit logged. Auto-increments version per partner+fileType.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-put">PUT</div>
+        <div>
+          <div class="route-path">/api/v1/mappings/{mappingId}</div>
+          <div class="route-desc">Update existing mapping. Creates new version. Previous version deactivated.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/mappings/{mappingId}/activate</div>
+          <div class="route-desc">Set mapping as the active version for this partner+fileType combination.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/mappings/ai-suggest</div>
+          <div class="route-desc">Request AI mapping suggestions for a file. Body: { "entryNo": 123 }. Returns suggested mapping lines with confidence scores.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/mappings/{mappingId}/test</div>
+          <div class="route-desc">Dry-run mapping against a sample file. Body: { "entryNo": 123 }. Returns preview canonical output without inserting staging data.</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Partner Config APIs</div>
+      <div class="api-route">
+        <div class="method method-get">GET</div>
+        <div>
+          <div class="route-path">/api/v1/partners</div>
+          <div class="route-desc">List all configured partners with connection status and last activity.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/partners</div>
+          <div class="route-desc">Create new partner. Body: { partnerCode, name, format, processingMode, sftpConfig }</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-put">PUT</div>
+        <div>
+          <div class="route-path">/api/v1/partners/{partnerId}</div>
+          <div class="route-desc">Update partner configuration including connection settings and processing preferences.</div>
+        </div>
+      </div>
+      <div class="api-route">
+        <div class="method method-post">POST</div>
+        <div>
+          <div class="route-path">/api/v1/partners/{partnerId}/test-connection</div>
+          <div class="route-desc">Test SFTP/FTP connection to partner server. Returns connection status and latency.</div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Example API Response</div>
+      <div class="code-block" style="font-size:11px">
+<span class="cmt">// GET /api/v1/files/1234</span>
+{
+  <span class="str">"entryNo"</span>: <span class="num">1234</span>,
+  <span class="str">"fileName"</span>: <span class="str">"orders_20260403.xml"</span>,
+  <span class="str">"fileType"</span>: <span class="str">"XML"</span>,
+  <span class="str">"partnerId"</span>: <span class="num">42</span>,
+  <span class="str">"partnerCode"</span>: <span class="str">"ACME_LOGISTICS"</span>,
+  <span class="str">"status"</span>: <span class="str">"PROCESSED"</span>,
+  <span class="str">"processingMode"</span>: <span class="str">"AUTO"</span>,
+  <span class="str">"receivedTimestamp"</span>: <span class="str">"2026-04-03T08:15:00Z"</span>,
+  <span class="str">"processedTimestamp"</span>: <span class="str">"2026-04-03T08:15:12Z"</span>,
+  <span class="str">"fileSize"</span>: <span class="num">48392</span>,
+  <span class="str">"checksum"</span>: <span class="str">"a3f9c2..."</span>,
+  <span class="str">"orderCount"</span>: <span class="num">247</span>,
+  <span class="str">"_links"</span>: {
+    <span class="str">"self"</span>: { <span class="str">"href"</span>: <span class="str">"/api/v1/files/1234"</span> },
+    <span class="str">"download"</span>: { <span class="str">"href"</span>: <span class="str">"/api/v1/files/1234/download"</span> },
+    <span class="str">"structure"</span>: { <span class="str">"href"</span>: <span class="str">"/api/v1/files/1234/structure"</span> }
+  }
+}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 4: MAPPING DESIGNER                             -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab4">
+  <div class="section-title">Visual <span>Mapping Designer</span></div>
+  <div class="section-sub">Drag-and-drop field mapping UI. Source file structure on the left, canonical data model on the right. Connections are drawn visually. Transformations configured inline.</div>
+
+  <!-- MAPPING DESIGNER MOCK -->
+  <div class="mapping-designer">
+    <!-- SOURCE PANEL -->
+    <div class="map-panel">
+      <div class="map-panel-header">
+        <span>📂</span> Source: ACME_ORDERS.XML
+        <span class="badge badge-cyan" style="margin-left:auto;font-size:10px">XML</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'Fira Code',monospace">Drag fields → drop on target</div>
+
+      <div class="tree-node mapped">📁 <strong>/Order</strong> <span class="node-type">ROOT</span></div>
+      <div class="tree-node child mapped">📁 /Order/Header <span class="node-type">OBJECT</span></div>
+      <div class="tree-node grandchild mapped">🔤 /Order/Header/OrderNo <span class="node-type">STRING</span></div>
+      <div class="tree-node grandchild mapped">🔤 /Order/Header/CustomerRef <span class="node-type">STRING</span></div>
+      <div class="tree-node grandchild mapped">📅 /Order/Header/OrderDate <span class="node-type">DATE</span></div>
+      <div class="tree-node grandchild">🔤 /Order/Header/Priority <span class="node-type">STRING</span></div>
+      <div class="tree-node grandchild">🔤 /Order/Header/Incoterm <span class="node-type">STRING</span></div>
+      <div class="tree-node child mapped">📁 /Order/Addresses <span class="node-type">OBJECT</span></div>
+      <div class="tree-node grandchild mapped">🔤 /Order/Addresses/PickupAddr <span class="node-type">STRING</span></div>
+      <div class="tree-node grandchild mapped">🔤 /Order/Addresses/DeliveryAddr <span class="node-type">STRING</span></div>
+      <div class="tree-node child">📋 /Order/Lines[ ] <span class="node-type">ARRAY</span></div>
+      <div class="tree-node grandchild mapped">🔤 /Order/Lines[*]/ItemCode <span class="node-type">STRING</span></div>
+      <div class="tree-node grandchild mapped">🔢 /Order/Lines[*]/Qty <span class="node-type">NUMBER</span></div>
+      <div class="tree-node grandchild mapped">🔢 /Order/Lines[*]/WeightKG <span class="node-type">NUMBER</span></div>
+      <div class="tree-node grandchild">🔤 /Order/Lines[*]/UOM <span class="node-type">STRING</span></div>
+      <div class="tree-node child">📁 /Order/Costs <span class="node-type">OBJECT</span></div>
+      <div class="tree-node grandchild">🔢 /Order/Costs/FreightAmt <span class="node-type">NUMBER</span></div>
+      <div class="tree-node grandchild">🔤 /Order/Costs/Currency <span class="node-type">STRING</span></div>
+    </div>
+
+    <!-- CONNECTOR COLUMN -->
+    <div class="map-connector">
+      <svg width="60" height="480" style="position:absolute">
+        <defs><marker id="mc" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#00d4ff" stroke-width="1.5"/></marker></defs>
+        <line x1="0" y1="105" x2="60" y2="95" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+        <line x1="0" y1="127" x2="60" y2="145" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+        <line x1="0" y1="150" x2="60" y2="172" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+        <line x1="0" y1="218" x2="60" y2="225" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+        <line x1="0" y1="240" x2="60" y2="250" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+        <line x1="0" y1="310" x2="60" y2="305" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+        <line x1="0" y1="333" x2="60" y2="330" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+        <line x1="0" y1="355" x2="60" y2="358" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="3" opacity=".7" marker-end="url(#mc)"/>
+      </svg>
+    </div>
+
+    <!-- TARGET PANEL -->
+    <div class="map-panel">
+      <div class="map-panel-header">
+        <span>⭐</span> Canonical Data Model
+        <span class="badge badge-orange" style="margin-left:auto;font-size:10px">TARGET</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'Fira Code',monospace">Canonical_Order fields</div>
+
+      <div style="font-size:10px;color:var(--orange);font-family:'Exo 2',monospace;font-weight:700;letter-spacing:.5px;margin:8px 0 6px;text-transform:uppercase">Order Header</div>
+      <div class="target-field required mapped">⭐ external_order_id <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ /Order/Header/OrderNo</span></div>
+      <div class="target-field required mapped">⭐ customer_code <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ LOOKUP(CustomerRef)</span></div>
+      <div class="target-field required mapped">⭐ order_date <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ DATE_FORMAT(OrderDate)</span></div>
+      <div class="target-field">🔤 incoterm <span style="margin-left:auto;font-size:10px;color:var(--muted)">DEFAULT: "DAP"</span></div>
+      <div class="target-field">🔤 priority <span style="margin-left:auto;font-size:10px;color:var(--muted)">DEFAULT: "NORMAL"</span></div>
+
+      <div style="font-size:10px;color:var(--green);font-family:'Exo 2',monospace;font-weight:700;letter-spacing:.5px;margin:14px 0 6px;text-transform:uppercase">Addresses</div>
+      <div class="target-field required mapped">⭐ origin_address <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ /Order/Addresses/PickupAddr</span></div>
+      <div class="target-field required mapped">⭐ destination_address <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ /Order/Addresses/DeliveryAddr</span></div>
+
+      <div style="font-size:10px;color:var(--purple);font-family:'Exo 2',monospace;font-weight:700;letter-spacing:.5px;margin:14px 0 6px;text-transform:uppercase">Order Lines</div>
+      <div class="target-field required mapped">⭐ lines[*].item_code <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ UPPER(Lines/ItemCode)</span></div>
+      <div class="target-field required mapped">⭐ lines[*].quantity <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ /Lines/Qty</span></div>
+      <div class="target-field required mapped">⭐ lines[*].weight_kg <span style="margin-left:auto;font-size:10px;color:var(--green)">✓ /Lines/WeightKG</span></div>
+      <div class="target-field">🔤 lines[*].uom <span style="margin-left:auto;font-size:10px;color:var(--muted)">DEFAULT: "KG"</span></div>
+    </div>
+  </div>
+
+  <!-- TRANSFORMATION TYPES -->
+  <div class="divider"></div>
+  <div class="section-label">Supported Transformation Rules</div>
+  <div class="grid-3" style="gap:16px">
+    <div class="card">
+      <div class="card-title">Date Transformations</div>
+      <div class="code-block" style="font-size:11px">
+<span class="fn">DATE_FORMAT</span>(field, <span class="str">"dd/MM/yyyy"</span>, <span class="str">"yyyy-MM-dd"</span>)
+<span class="fn">DATE_ADD</span>(field, <span class="num">3</span>, <span class="str">"DAYS"</span>)
+<span class="fn">DATE_NOW</span>()  <span class="cmt">// Current UTC</span>
+<span class="fn">TIMEZONE</span>(field, <span class="str">"Europe/London"</span>)
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">String Transformations</div>
+      <div class="code-block" style="font-size:11px">
+<span class="fn">UPPER</span>(field)
+<span class="fn">LOWER</span>(field)
+<span class="fn">TRIM</span>(field)
+<span class="fn">SUBSTRING</span>(field, <span class="num">0</span>, <span class="num">10</span>)
+<span class="fn">CONCAT</span>(f1, <span class="str">"-"</span>, f2)
+<span class="fn">REPLACE</span>(field, <span class="str">"old"</span>, <span class="str">"new"</span>)
+<span class="fn">REGEX</span>(field, <span class="str">"[^0-9]"</span>, <span class="str">""</span>)
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Conditional / Logic</div>
+      <div class="code-block" style="font-size:11px">
+<span class="fn">IF</span>(field == <span class="str">"Y"</span>, <span class="str">"true"</span>, <span class="str">"false"</span>)
+<span class="fn">IF_NULL</span>(field, <span class="str">"default"</span>)
+<span class="fn">LOOKUP</span>(field, <span class="str">"CUSTOMER_MAP"</span>)
+<span class="fn">SPLIT</span>(field, <span class="str">","</span>, <span class="num">0</span>)
+<span class="fn">MATH</span>(field, <span class="str">"* 1.1"</span>)
+<span class="fn">ROUND</span>(field, <span class="num">2</span>)
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE MAPPING TABLE -->
+  <div class="divider"></div>
+  <div class="section-label">Example Mapping Configuration — ACME_LOGISTICS XML to Canonical</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Seq</th><th>Source Field Path</th><th>Target Field</th><th>Transformation</th><th>Default</th><th>Required</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>/Order/Header/OrderNo</code></td><td><code>external_order_id</code></td><td><code>UPPER()</code></td><td>—</td><td><span class="badge badge-red">YES</span></td></tr>
+        <tr><td>2</td><td><code>/Order/Header/CustomerRef</code></td><td><code>customer_code</code></td><td><code>LOOKUP(CUSTOMER_MAP)</code></td><td>—</td><td><span class="badge badge-red">YES</span></td></tr>
+        <tr><td>3</td><td><code>/Order/Header/OrderDate</code></td><td><code>order_date</code></td><td><code>DATE_FORMAT("dd/MM/yyyy","yyyy-MM-dd")</code></td><td>—</td><td><span class="badge badge-red">YES</span></td></tr>
+        <tr><td>4</td><td><code>/Order/Header/Priority</code></td><td><code>priority</code></td><td><code>UPPER()</code></td><td>NORMAL</td><td><span class="badge badge-green">NO</span></td></tr>
+        <tr><td>5</td><td><code>/Order/Addresses/PickupAddr</code></td><td><code>origin_address</code></td><td>DIRECT</td><td>—</td><td><span class="badge badge-red">YES</span></td></tr>
+        <tr><td>6</td><td><code>/Order/Addresses/DeliveryAddr</code></td><td><code>destination_address</code></td><td>DIRECT</td><td>—</td><td><span class="badge badge-red">YES</span></td></tr>
+        <tr><td>7</td><td><code>/Order/Lines[*]/ItemCode</code></td><td><code>lines[].item_code</code></td><td><code>UPPER()</code></td><td>—</td><td><span class="badge badge-red">YES</span></td></tr>
+        <tr><td>8</td><td><code>/Order/Lines[*]/Qty</code></td><td><code>lines[].quantity</code></td><td><code>ROUND(4)</code></td><td>—</td><td><span class="badge badge-red">YES</span></td></tr>
+        <tr><td>9</td><td><code>/Order/Lines[*]/WeightKG</code></td><td><code>lines[].weight_kg</code></td><td><code>ROUND(3)</code></td><td>0.000</td><td><span class="badge badge-green">NO</span></td></tr>
+        <tr><td>10</td><td>—</td><td><code>lines[].uom</code></td><td>CONSTANT</td><td>KG</td><td><span class="badge badge-green">NO</span></td></tr>
+        <tr><td>11</td><td><code>/Order/Costs/FreightAmt</code></td><td><code>costs[].amount</code></td><td>DIRECT</td><td>—</td><td><span class="badge badge-green">NO</span></td></tr>
+        <tr><td>12</td><td><code>/Order/Costs/Currency</code></td><td><code>costs[].currency</code></td><td><code>UPPER()</code></td><td>EUR</td><td><span class="badge badge-green">NO</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 5: FILE INGESTION                               -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab5">
+  <div class="section-title">File <span>Ingestion Module</span></div>
+  <div class="section-sub">Multi-channel file ingestion supporting SFTP polling, FTP, REST API push, AS2, and email. Each channel is independently configured per partner with automatic partner detection.</div>
+
+  <div class="grid-2" style="gap:28px">
+    <div>
+      <div class="section-label">Ingestion Channels</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card" style="border-left:3px solid var(--cyan)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:22px">📡</span>
+            <div><div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--cyan)">SFTP Polling</div><div style="font-size:11px;color:var(--muted)">Spring Integration SFTP Adapter</div></div>
+            <span class="badge badge-cyan" style="margin-left:auto">Most Common</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">Polls partner SFTP servers on configurable schedule (cron). Moves processed files to /archive folder. Supports key-based and password authentication. Detects partner from folder path pattern: <code style="font-family:'Fira Code',monospace;color:var(--cyan)">/sftp/partners/{PARTNER_CODE}/inbox/</code></div>
+          <div class="code-block" style="margin-top:10px;font-size:10px">sftp.host=sftp.partner.com
+sftp.port=22
+sftp.user=ediuser
+sftp.private-key=/keys/partner_rsa
+sftp.remote-dir=/inbox
+sftp.poll-interval=60000</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--purple)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:22px">🌐</span>
+            <div><div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--purple)">REST API Push</div><div style="font-size:11px;color:var(--muted)">Webhook / HTTP Push</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">Partners POST files to our endpoint. Authentication via API key header <code style="font-family:'Fira Code',monospace;color:var(--purple)">X-API-Key</code> or JWT. Supports multipart file upload and Base64 encoded content. Rate limited per partner. Async processing via Kafka.</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--orange)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:22px">📧</span>
+            <div><div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--orange)">AS2 Protocol</div><div style="font-size:11px;color:var(--muted)">EDI Standard Protocol</div></div>
+            <span class="badge badge-orange" style="margin-left:auto">Enterprise EDI</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">Industry-standard AS2 protocol for X12 and EDIFACT. Supports MDN acknowledgements, signing, and encryption. Partner identified from AS2-From header. Uses Mendelson AS2 or Boomi AS2 connector.</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--green)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:22px">📨</span>
+            <div><div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--green)">Email Attachments</div><div style="font-size:11px;color:var(--muted)">IMAP / POP3 Polling</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">Spring Integration IMAP adapter polls mailbox for EDI attachments. Filters by sender address mapped to partner_id. Extracts attachments and routes to processing pipeline. Replies with acknowledgement email.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Supported File Formats &amp; Parsers</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Format</th><th>Extension</th><th>Parser Library</th><th>Use Case</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-cyan">XML</span></td><td><code>.xml</code></td><td>JAXB, DOM4J, StAX</td><td>Most common structured format</td></tr>
+            <tr><td><span class="badge badge-green">JSON</span></td><td><code>.json</code></td><td>Jackson</td><td>REST/API partners, modern</td></tr>
+            <tr><td><span class="badge badge-yellow">CSV</span></td><td><code>.csv</code></td><td>OpenCSV, Apache Commons</td><td>Simple tabular data, spreadsheets</td></tr>
+            <tr><td><span class="badge badge-orange">TXT</span></td><td><code>.txt</code></td><td>Custom delimiter parser</td><td>Fixed-width, pipe-delimited legacy</td></tr>
+            <tr><td><span class="badge badge-red">EDIFACT</span></td><td><code>.edi</code></td><td>Smooks, Babelway</td><td>European standard, shipping/customs</td></tr>
+            <tr><td><span class="badge badge-purple">X12</span></td><td><code>.edi .x12</code></td><td>Smooks, BerkeleyEDI</td><td>North American standard, 850/856/810</td></tr>
+            <tr><td><span class="badge badge-cyan">Excel</span></td><td><code>.xlsx .xls</code></td><td>Apache POI</td><td>Manual/legacy partner submissions</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Structure Analyzer Output Example</div>
+      <div class="code-block" style="font-size:11px">
+<span class="cmt">// Schema tree for /Order XML</span>
+{
+  <span class="str">"root"</span>: <span class="str">"Order"</span>,
+  <span class="str">"children"</span>: [
+    { <span class="str">"path"</span>: <span class="str">"/Order/Header"</span>, <span class="str">"type"</span>: <span class="str">"OBJECT"</span>,
+      <span class="str">"children"</span>: [
+        { <span class="str">"path"</span>: <span class="str">"/Order/Header/OrderNo"</span>, <span class="str">"type"</span>: <span class="str">"STRING"</span>, <span class="str">"sample"</span>: <span class="str">"ORD-2026-001"</span> },
+        { <span class="str">"path"</span>: <span class="str">"/Order/Header/OrderDate"</span>, <span class="str">"type"</span>: <span class="str">"DATE"</span>,  <span class="str">"sample"</span>: <span class="str">"03/04/2026"</span> },
+        { <span class="str">"path"</span>: <span class="str">"/Order/Header/CustomerRef"</span>, <span class="str">"type"</span>: <span class="str">"STRING"</span>, <span class="str">"sample"</span>: <span class="str">"CUST-0042"</span> }
+      ]
+    },
+    { <span class="str">"path"</span>: <span class="str">"/Order/Lines"</span>, <span class="str">"type"</span>: <span class="str">"ARRAY"</span>, <span class="str">"count"</span>: <span class="num">8</span>,
+      <span class="str">"children"</span>: [
+        { <span class="str">"path"</span>: <span class="str">"/Order/Lines[*]/ItemCode"</span>, <span class="str">"type"</span>: <span class="str">"STRING"</span> },
+        { <span class="str">"path"</span>: <span class="str">"/Order/Lines[*]/Qty"</span>,      <span class="str">"type"</span>: <span class="str">"NUMBER"</span> },
+        { <span class="str">"path"</span>: <span class="str">"/Order/Lines[*]/WeightKG"</span>,  <span class="str">"type"</span>: <span class="str">"NUMBER"</span> }
+      ]
+    }
+  ]
+}
+      </div>
+
+      <div class="section-label" style="margin-top:24px">File List UI Screen</div>
+      <div class="card" style="background:var(--bg1)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px">EDI Files Inbox</div>
+          <div style="display:flex;gap:8px">
+            <span class="badge badge-cyan">↑ Upload File</span>
+            <span class="badge badge-yellow">⟳ Refresh</span>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>File Name</th><th>Partner</th><th>Type</th><th>Received</th><th>Mode</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td>1247</td><td style="font-size:11px;font-family:'Fira Code',monospace">orders_20260403.xml</td><td>ACME</td><td><span class="badge badge-cyan" style="font-size:10px">XML</span></td><td style="font-size:11px">08:15:00</td><td><span class="badge badge-cyan" style="font-size:10px">AUTO</span></td><td><span class="status status-processed">Processed</span></td><td style="font-size:11px"><span style="color:var(--cyan);cursor:pointer">View</span></td></tr>
+              <tr><td>1246</td><td style="font-size:11px;font-family:'Fira Code',monospace">shipment_DHL_001.csv</td><td>DHL</td><td><span class="badge badge-yellow" style="font-size:10px">CSV</span></td><td style="font-size:11px">07:42:00</td><td><span class="badge badge-purple" style="font-size:10px">MANUAL</span></td><td><span class="status status-pending">Pending</span></td><td style="font-size:11px"><span style="color:var(--cyan);cursor:pointer">View</span> · <span style="color:var(--green);cursor:pointer">Process</span></td></tr>
+              <tr><td>1245</td><td style="font-size:11px;font-family:'Fira Code',monospace">INV_MAERSK_20260403.edi</td><td>MAERSK</td><td><span class="badge badge-red" style="font-size:10px">EDIFACT</span></td><td style="font-size:11px">06:30:00</td><td><span class="badge badge-cyan" style="font-size:10px">AUTO</span></td><td><span class="status status-error">Error</span></td><td style="font-size:11px"><span style="color:var(--cyan);cursor:pointer">View</span> · <span style="color:var(--orange);cursor:pointer">Retry</span></td></tr>
+              <tr><td>1244</td><td style="font-size:11px;font-family:'Fira Code',monospace">orders_batch_FedEx.json</td><td>FedEx</td><td><span class="badge badge-green" style="font-size:10px">JSON</span></td><td style="font-size:11px">05:00:00</td><td><span class="badge badge-yellow" style="font-size:10px">SCHED</span></td><td><span class="status status-processed">Processed</span></td><td style="font-size:11px"><span style="color:var(--cyan);cursor:pointer">View</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 6: AI MAPPING                                   -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab6">
+  <div class="section-title">AI Auto <span>Mapping Assistant</span></div>
+  <div class="section-sub">Machine learning-powered mapping suggestions using field name similarity (cosine similarity on embeddings), historical mapping patterns, and data type analysis. Reduces mapping setup time from hours to minutes.</div>
+
+  <div class="grid-2">
+    <div>
+      <div class="section-label">How AI Mapping Works</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan))">1</div>
+          <div class="step-body">
+            <div class="step-title">File Structure Extraction</div>
+            <div class="step-desc">Schema tree generated from analyzed file. All field paths with data types and sample values extracted into feature vectors.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan))">2</div>
+          <div class="step-body">
+            <div class="step-title">Semantic Similarity Scoring</div>
+            <div class="step-desc">Field names tokenized and embedded using a fine-tuned transformer model. Cosine similarity computed against canonical field embeddings. Top-N candidates ranked per target field.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan))">3</div>
+          <div class="step-body">
+            <div class="step-title">Historical Pattern Matching</div>
+            <div class="step-desc">Query MAPPING_LINES table for similar field paths mapped by same or similar partners. Boosts confidence scores for historically confirmed mappings.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan))">4</div>
+          <div class="step-body">
+            <div class="step-title">Data Type Validation</div>
+            <div class="step-desc">Check that suggested source field type is compatible with target canonical type. DATE → DATE, NUMBER → NUMBER. Cross-type mappings flagged with warning.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:linear-gradient(135deg,var(--purple),var(--cyan))">5</div>
+          <div class="step-body">
+            <div class="step-title">Suggestion Presentation</div>
+            <div class="step-desc">Suggestions displayed in mapping designer with confidence % and source. User accepts, modifies, or rejects. Accepted suggestions fed back into training data for continuous improvement.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">AI Suggestion Output Example</div>
+      <div class="code-block" style="font-size:11px;margin-bottom:20px">
+<span class="cmt">// POST /api/v1/mappings/ai-suggest</span>
+<span class="cmt">// Response:</span>
+{
+  <span class="str">"suggestions"</span>: [
+    {
+      <span class="str">"targetField"</span>: <span class="str">"external_order_id"</span>,
+      <span class="str">"sourcePath"</span>: <span class="str">"/Order/Header/OrderNo"</span>,
+      <span class="str">"confidence"</span>: <span class="num">0.97</span>,
+      <span class="str">"reason"</span>: <span class="str">"High name similarity (OrderNo≈order_id) + historical match (Partner ACME, 45 times)"</span>,
+      <span class="str">"suggestedTransform"</span>: <span class="str">"UPPER"</span>
+    },
+    {
+      <span class="str">"targetField"</span>: <span class="str">"customer_code"</span>,
+      <span class="str">"sourcePath"</span>: <span class="str">"/Order/Header/CustomerRef"</span>,
+      <span class="str">"confidence"</span>: <span class="num">0.89</span>,
+      <span class="str">"reason"</span>: <span class="str">"CustomerRef matches customer_code pattern + LOOKUP table available"</span>,
+      <span class="str">"suggestedTransform"</span>: <span class="str">"LOOKUP(CUSTOMER_MAP)"</span>
+    },
+    {
+      <span class="str">"targetField"</span>: <span class="str">"order_date"</span>,
+      <span class="str">"sourcePath"</span>: <span class="str">"/Order/Header/OrderDate"</span>,
+      <span class="str">"confidence"</span>: <span class="num">0.95</span>,
+      <span class="str">"reason"</span>: <span class="str">"DATE type match + sample '03/04/2026' → DATE_FORMAT detected"</span>,
+      <span class="str">"suggestedTransform"</span>: <span class="str">"DATE_FORMAT('dd/MM/yyyy','yyyy-MM-dd')"</span>
+    }
+  ],
+  <span class="str">"overallConfidence"</span>: <span class="num">0.91</span>,
+  <span class="str">"unmappedRequired"</span>: []
+}
+      </div>
+
+      <div class="section-label">Confidence Scoring Matrix</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Score Range</th><th>Label</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>0.90 – 1.00</td><td><span class="badge badge-green">High Confidence</span></td><td>Auto-accepted if partner trusted</td></tr>
+            <tr><td>0.70 – 0.89</td><td><span class="badge badge-yellow">Medium Confidence</span></td><td>Suggested, operator reviews</td></tr>
+            <tr><td>0.50 – 0.69</td><td><span class="badge badge-orange">Low Confidence</span></td><td>Shown as candidate, not pre-selected</td></tr>
+            <tr><td>0.00 – 0.49</td><td><span class="badge badge-red">No Match</span></td><td>Manual mapping required</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-label" style="margin-top:20px">Continuous Learning</div>
+      <div class="card">
+        <div style="font-size:12px;color:var(--muted);line-height:1.9">
+          Every accepted/rejected suggestion is stored as training feedback. The model is retrained weekly using:<br>
+          • All confirmed MAPPING_LINES records (positive examples)<br>
+          • All rejected suggestions (negative examples)<br>
+          • New partner additions trigger incremental learning<br>
+          • Model served via Python FastAPI sidecar service<br>
+          • A/B testing between model versions supported
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 7: MONITORING DASHBOARD                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab7">
+  <div class="section-title">Monitoring <span>Dashboard</span></div>
+  <div class="section-sub">Real-time operational visibility into file processing throughput, partner activity, error rates, and system health. All metrics published to Prometheus and visualized in Grafana with custom TMS dashboards.</div>
+
+  <!-- KPI ROW -->
+  <div class="grid-4" style="margin-bottom:28px">
+    <div class="kpi" style="border-top:3px solid var(--cyan)">
+      <div class="kpi-val" style="color:var(--cyan)" id="kpi1">2,847</div>
+      <div class="kpi-label">Files Received Today</div>
+      <div class="kpi-delta" style="color:var(--green)">↑ +12% vs yesterday</div>
+    </div>
+    <div class="kpi" style="border-top:3px solid var(--green)">
+      <div class="kpi-val" style="color:var(--green)" id="kpi2">2,791</div>
+      <div class="kpi-label">Files Processed</div>
+      <div class="kpi-delta" style="color:var(--green)">98.0% success rate</div>
+    </div>
+    <div class="kpi" style="border-top:3px solid var(--red)">
+      <div class="kpi-val" style="color:var(--red)" id="kpi3">56</div>
+      <div class="kpi-label">Failed Files</div>
+      <div class="kpi-delta" style="color:var(--red)">↑ +3 in last hour</div>
+    </div>
+    <div class="kpi" style="border-top:3px solid var(--yellow)">
+      <div class="kpi-val" style="color:var(--yellow)" id="kpi4">1.2s</div>
+      <div class="kpi-label">Avg Processing Time</div>
+      <div class="kpi-delta" style="color:var(--green)">↓ -0.3s vs baseline</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="gap:24px">
+    <!-- HOURLY THROUGHPUT CHART -->
+    <div class="card">
+      <div class="card-title">📈 Files Processed Per Hour (Last 12h)</div>
+      <div class="chart-bar" id="throughputChart">
+        <!-- bars will be generated by JS -->
+      </div>
+    </div>
+
+    <!-- PARTNER DISTRIBUTION -->
+    <div class="card">
+      <div class="card-title">🤝 Partner Volume Distribution</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>ACME Logistics</span><span style="color:var(--cyan)">847 files (29.7%)</span></div>
+          <div class="metric-bar"><div class="metric-fill" style="width:29.7%;background:linear-gradient(90deg,var(--cyan),var(--cyan2))"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>DHL Supply Chain</span><span style="color:var(--green)">623 files (21.9%)</span></div>
+          <div class="metric-bar"><div class="metric-fill" style="width:21.9%;background:linear-gradient(90deg,var(--green),#059669)"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Maersk Line</span><span style="color:var(--purple)">512 files (18.0%)</span></div>
+          <div class="metric-bar"><div class="metric-fill" style="width:18%;background:linear-gradient(90deg,var(--purple),#7c3aed)"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>FedEx Freight</span><span style="color:var(--orange)">445 files (15.6%)</span></div>
+          <div class="metric-bar"><div class="metric-fill" style="width:15.6%;background:linear-gradient(90deg,var(--orange),#e65c00)"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>XPO Logistics</span><span style="color:var(--yellow)">298 files (10.5%)</span></div>
+          <div class="metric-bar"><div class="metric-fill" style="width:10.5%;background:linear-gradient(90deg,var(--yellow),#d97706)"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Others (12 partners)</span><span style="color:var(--muted)">122 files (4.3%)</span></div>
+          <div class="metric-bar"><div class="metric-fill" style="width:4.3%;background:var(--muted)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ERROR TYPES -->
+    <div class="card">
+      <div class="card-title">🚨 Top Error Types (Today)</div>
+      <div class="tbl-wrap" style="margin-top:8px">
+        <table>
+          <thead><tr><th>Error Type</th><th>Code</th><th>Count</th><th>% of Errors</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-red">MISSING_FIELD</span></td><td><code>EDI-001</code></td><td>21</td><td>
+              <div style="display:flex;align-items:center;gap:8px">37.5%<div class="metric-bar" style="width:60px;display:inline-block"><div class="metric-fill" style="width:37.5%;background:var(--red)"></div></div></div></td></tr>
+            <tr><td><span class="badge badge-orange">TRANSFORM_FAIL</span></td><td><code>EDI-002</code></td><td>14</td><td>
+              <div style="display:flex;align-items:center;gap:8px">25.0%<div class="metric-bar" style="width:60px;display:inline-block"><div class="metric-fill" style="width:25%;background:var(--orange)"></div></div></div></td></tr>
+            <tr><td><span class="badge badge-yellow">INVALID_FORMAT</span></td><td><code>EDI-003</code></td><td>10</td><td>
+              <div style="display:flex;align-items:center;gap:8px">17.9%<div class="metric-bar" style="width:60px;display:inline-block"><div class="metric-fill" style="width:17.9%;background:var(--yellow)"></div></div></div></td></tr>
+            <tr><td><span class="badge badge-purple">LOOKUP_FAIL</span></td><td><code>EDI-004</code></td><td>8</td><td>
+              <div style="display:flex;align-items:center;gap:8px">14.3%<div class="metric-bar" style="width:60px;display:inline-block"><div class="metric-fill" style="width:14.3%;background:var(--purple)"></div></div></div></td></tr>
+            <tr><td><span class="badge badge-cyan">DUPLICATE_ORDER</span></td><td><code>EDI-005</code></td><td>3</td><td>
+              <div style="display:flex;align-items:center;gap:8px">5.3%<div class="metric-bar" style="width:60px;display:inline-block"><div class="metric-fill" style="width:5.3%;background:var(--cyan)"></div></div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SYSTEM HEALTH -->
+    <div class="card">
+      <div class="card-title">💚 System Health</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">Kafka Consumer Lag</span>
+          <span class="badge badge-green">42 msgs</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">Processing Queue Depth</span>
+          <span class="badge badge-cyan">156 pending</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">Active Processing Workers</span>
+          <span class="badge badge-green">8/10 active</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">DB Connection Pool</span>
+          <span class="badge badge-green">12/20 used</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">Redis Hit Rate</span>
+          <span class="badge badge-green">94.2%</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">EDI Gateway Service</span>
+          <span class="badge badge-green">● Healthy</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">File Storage Service</span>
+          <span class="badge badge-green">● Healthy</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">Mapping Engine</span>
+          <span class="badge badge-green">● Healthy</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">AI Mapping Service</span>
+          <span class="badge badge-yellow">● Degraded</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px">SFTP Partner Connections</span>
+          <span class="badge badge-orange">3/5 active</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE TARGETS -->
+  <div class="divider"></div>
+  <div class="section-label">Performance Targets &amp; Scalability</div>
+  <div class="grid-4">
+    <div class="card" style="text-align:center">
+      <div style="font-size:32px;font-weight:900;font-family:'Exo 2',sans-serif;color:var(--cyan)">10M+</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">EDI Records / Day</div>
+      <div style="font-size:11px;color:var(--text);margin-top:6px">Horizontal pod scaling</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:32px;font-weight:900;font-family:'Exo 2',sans-serif;color:var(--green)">&lt;2s</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">P99 Processing Latency</div>
+      <div style="font-size:11px;color:var(--text);margin-top:6px">Single file processing</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:32px;font-weight:900;font-family:'Exo 2',sans-serif;color:var(--purple)">99.9%</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Target Uptime SLA</div>
+      <div style="font-size:11px;color:var(--text);margin-top:6px">Multi-AZ deployment</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:32px;font-weight:900;font-family:'Exo 2',sans-serif;color:var(--orange)">0</div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Data Loss Tolerance</div>
+      <div style="font-size:11px;color:var(--text);margin-top:6px">Kafka persistence + DLQ</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 8: ERROR HANDLING                               -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab8">
+  <div class="section-title">Error <span>Handling &amp; Recovery</span></div>
+  <div class="section-sub">Comprehensive error capture, classification, notification, and recovery system. Every error is traceable to the source file, specific mapping line, and field path that caused the failure.</div>
+
+  <div class="grid-2" style="gap:28px">
+    <div>
+      <div class="section-label">Error Classification</div>
+      <div class="tbl-wrap" style="margin-bottom:24px">
+        <table>
+          <thead><tr><th>Code</th><th>Type</th><th>Severity</th><th>Auto-Retry?</th></tr></thead>
+          <tbody>
+            <tr><td><code>EDI-001</code></td><td>MISSING_MANDATORY_FIELD</td><td><span class="badge badge-red">CRITICAL</span></td><td>No — mapping fix required</td></tr>
+            <tr><td><code>EDI-002</code></td><td>TRANSFORMATION_FAILURE</td><td><span class="badge badge-red">CRITICAL</span></td><td>No — rule fix required</td></tr>
+            <tr><td><code>EDI-003</code></td><td>INVALID_DATA_FORMAT</td><td><span class="badge badge-orange">HIGH</span></td><td>No — source data issue</td></tr>
+            <tr><td><code>EDI-004</code></td><td>LOOKUP_VALUE_NOT_FOUND</td><td><span class="badge badge-orange">HIGH</span></td><td>No — lookup table update</td></tr>
+            <tr><td><code>EDI-005</code></td><td>DUPLICATE_ORDER_ID</td><td><span class="badge badge-yellow">MEDIUM</span></td><td>No — business rule</td></tr>
+            <tr><td><code>EDI-006</code></td><td>SCHEMA_PARSE_ERROR</td><td><span class="badge badge-red">CRITICAL</span></td><td>No — file corrupt</td></tr>
+            <tr><td><code>EDI-007</code></td><td>DB_INSERT_FAILURE</td><td><span class="badge badge-red">CRITICAL</span></td><td>Yes — transient DB error</td></tr>
+            <tr><td><code>EDI-008</code></td><td>VALIDATION_RULE_FAIL</td><td><span class="badge badge-orange">HIGH</span></td><td>No — business rule</td></tr>
+            <tr><td><code>EDI-009</code></td><td>TIMEOUT</td><td><span class="badge badge-yellow">MEDIUM</span></td><td>Yes — 3× exponential</td></tr>
+            <tr><td><code>EDI-010</code></td><td>CHECKSUM_MISMATCH</td><td><span class="badge badge-orange">HIGH</span></td><td>No — request re-send</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-label">Error Recovery Workflow</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-circle" style="background:var(--red)">!</div>
+          <div class="step-body">
+            <div class="step-title">Error Detected</div>
+            <div class="step-desc">Exception caught in processing pipeline. Stack trace captured. Entry_no and mapping_line_id linked to error record. TMS_FILES.status = ERROR.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:var(--orange)">2</div>
+          <div class="step-body">
+            <div class="step-title">Error Logging</div>
+            <div class="step-desc">Insert into EDI_ERROR_LOG with error_type, error_code, field_path, full message, and timestamp. Publish to Kafka error topic for monitoring consumer.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:var(--yellow)">3</div>
+          <div class="step-body">
+            <div class="step-title">Auto-Retry (if applicable)</div>
+            <div class="step-desc">Transient errors (DB failures, timeouts) queued for retry. Exponential backoff: 1 min → 5 min → 15 min → 1 hour. After max_retries → permanent ERROR state.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:var(--purple)">4</div>
+          <div class="step-body">
+            <div class="step-title">Operator Notification</div>
+            <div class="step-desc">Alert sent via: Dashboard notification badge, Email (configurable), Slack/Teams webhook, PagerDuty for critical errors. SLA breach alerts if unresolved past threshold.</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-circle" style="background:var(--green)">5</div>
+          <div class="step-body">
+            <div class="step-title">Manual Resolution</div>
+            <div class="step-desc">Operator views error detail in Error Viewer UI. Can fix mapping, update lookup tables, or request partner to re-send file. Marks error resolved and triggers re-processing.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Error Viewer UI Screen</div>
+      <div class="card" style="background:var(--bg1);margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:14px">Error Log</div>
+          <div style="display:flex;gap:8px">
+            <span class="badge badge-red">56 Open</span>
+            <span class="badge badge-green">1,204 Resolved</span>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Error ID</th><th>File</th><th>Type</th><th>Field</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>ERR-4521</code></td>
+                <td style="font-size:11px">1245</td>
+                <td><span class="badge badge-red" style="font-size:10px">MISSING_FIELD</span></td>
+                <td style="font-size:10px;font-family:'Fira Code',monospace">/Order/Header/CustomerRef</td>
+                <td><span class="badge badge-red" style="font-size:10px">Open</span></td>
+                <td style="font-size:11px"><span style="color:var(--cyan);cursor:pointer">View</span> · <span style="color:var(--orange);cursor:pointer">Retry</span></td>
+              </tr>
+              <tr>
+                <td><code>ERR-4520</code></td>
+                <td style="font-size:11px">1242</td>
+                <td><span class="badge badge-orange" style="font-size:10px">LOOKUP_FAIL</span></td>
+                <td style="font-size:10px;font-family:'Fira Code',monospace">/Order/Header/Incoterm</td>
+                <td><span class="badge badge-red" style="font-size:10px">Open</span></td>
+                <td style="font-size:11px"><span style="color:var(--cyan);cursor:pointer">View</span> · <span style="color:var(--green);cursor:pointer">Fix Lookup</span></td>
+              </tr>
+              <tr>
+                <td><code>ERR-4519</code></td>
+                <td style="font-size:11px">1238</td>
+                <td><span class="badge badge-yellow" style="font-size:10px">INVALID_FORMAT</span></td>
+                <td style="font-size:10px;font-family:'Fira Code',monospace">/Order/Header/OrderDate</td>
+                <td><span class="badge badge-green" style="font-size:10px">Resolved</span></td>
+                <td style="font-size:11px"><span style="color:var(--cyan);cursor:pointer">View</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-label">Error Detail Panel</div>
+      <div class="card" style="background:var(--bg1)">
+        <div style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;color:var(--red);margin-bottom:14px">Error ERR-4521 — MISSING_MANDATORY_FIELD</div>
+        <div style="display:grid;grid-template-columns:130px 1fr;gap:8px;font-size:12px">
+          <span style="color:var(--muted)">File Entry No:</span><span>1245 — INV_MAERSK_20260403.edi</span>
+          <span style="color:var(--muted)">Error Code:</span><span><code>EDI-001</code></span>
+          <span style="color:var(--muted)">Field Path:</span><span style="font-family:'Fira Code',monospace">/Order/Header/CustomerRef</span>
+          <span style="color:var(--muted)">Mapping Line:</span><span>#2 — customer_code (REQUIRED)</span>
+          <span style="color:var(--muted)">Timestamp:</span><span>2026-04-03T06:30:15Z</span>
+          <span style="color:var(--muted)">Retry Count:</span><span>3/3 (max reached)</span>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:var(--muted)">
+          <strong style="color:var(--text)">Error Message:</strong><br>
+          Required field 'CustomerRef' is missing from source path /Order/Header. Field is mapped as mandatory (is_required=true) and no default value is configured. File cannot be processed without this field.
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <span class="badge badge-cyan" style="cursor:pointer">🔧 Update Mapping</span>
+          <span class="badge badge-orange" style="cursor:pointer">⟳ Retry Processing</span>
+          <span class="badge badge-purple" style="cursor:pointer">✉ Contact Partner</span>
+          <span class="badge badge-green" style="cursor:pointer">✓ Mark Resolved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- TAB 9: SECURITY & ROLES                             -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="tab-panel" id="tab9">
+  <div class="section-title">Security &amp; <span>Role Management</span></div>
+  <div class="section-sub">Enterprise-grade security with JWT-based authentication, role-based access control (RBAC), complete audit logging, and partner-level API key management.</div>
+
+  <div class="grid-2" style="gap:28px">
+    <div>
+      <div class="section-label">Role-Based Access Control Matrix</div>
+      <div class="tbl-wrap role-matrix" style="margin-bottom:24px">
+        <table>
+          <thead>
+            <tr>
+              <th>Permission</th>
+              <th style="text-align:center">Admin</th>
+              <th style="text-align:center">EDI Operator</th>
+              <th style="text-align:center">Viewer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>View file list</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+            <tr><td>View file details</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+            <tr><td>Download raw files</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>Trigger manual processing</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>Retry failed files</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>Delete files</td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>View mappings</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+            <tr><td>Create/Edit mappings</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>Activate mappings</td><td><span class="check-yes">✓</span></td><td><span class="check-partial">✓*</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>View error log</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td></tr>
+            <tr><td>Resolve errors</td><td><span class="check-yes">✓</span></td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>Manage partners</td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>View audit log</td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>User management</td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td><td><span class="check-no">✗</span></td></tr>
+            <tr><td>System configuration</td><td><span class="check-yes">✓</span></td><td><span class="check-no">✗</span></td><td><span class="check-no">✗</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:-16px;margin-bottom:24px">* EDI Operator can activate mappings only for partners assigned to their team.</div>
+
+      <div class="section-label">Authentication Flow</div>
+      <div class="card">
+        <div class="code-block" style="font-size:11px">
+<span class="cmt">// JWT Authentication Flow</span>
+<span class="num">1.</span> User → POST /auth/login {username, password}
+<span class="num">2.</span> Spring Security validates credentials (LDAP/DB)
+<span class="num">3.</span> Returns: { accessToken (15min), refreshToken (24h) }
+<span class="num">4.</span> All API calls: Authorization: Bearer {accessToken}
+<span class="num">5.</span> Gateway validates JWT signature + expiry
+<span class="num">6.</span> Extracts roles[] from JWT claims
+<span class="num">7.</span> @PreAuthorize checks applied per endpoint
+
+<span class="cmt">// Partner API Keys (for machine-to-machine)</span>
+POST /api/v1/files/upload
+Headers:
+  X-API-Key: pk_live_acme_logistics_xk9mz...
+  X-Partner-Code: ACME_LOGISTICS
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Audit Log</div>
+      <div class="card" style="background:var(--bg1);margin-bottom:20px">
+        <div style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;margin-bottom:14px">Recent Audit Events</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Resource</th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:10px;font-family:'Fira Code',monospace">08:47:22</td><td>j.smith</td><td><span class="badge badge-cyan" style="font-size:10px">FILE_DOWNLOAD</span></td><td style="font-size:11px">file #1247</td></tr>
+              <tr><td style="font-size:10px;font-family:'Fira Code',monospace">08:31:05</td><td>k.jones</td><td><span class="badge badge-orange" style="font-size:10px">MAPPING_EDIT</span></td><td style="font-size:11px">mapping #42 v3→v4</td></tr>
+              <tr><td style="font-size:10px;font-family:'Fira Code',monospace">08:15:44</td><td>system</td><td><span class="badge badge-green" style="font-size:10px">AUTO_PROCESS</span></td><td style="font-size:11px">file #1247 AUTO</td></tr>
+              <tr><td style="font-size:10px;font-family:'Fira Code',monospace">07:52:10</td><td>a.kumar</td><td><span class="badge badge-purple" style="font-size:10px">MANUAL_TRIGGER</span></td><td style="font-size:11px">file #1246</td></tr>
+              <tr><td style="font-size:10px;font-family:'Fira Code',monospace">07:30:00</td><td>admin</td><td><span class="badge badge-red" style="font-size:10px">PARTNER_CREATED</span></td><td style="font-size:11px">partner CARGO_EXPRESS</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-label">Security Controls</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="border-left:3px solid var(--cyan)">
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--cyan);margin-bottom:6px">Transport Security</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">All external connections over TLS 1.3. SFTP uses public key authentication. AS2 uses certificate-based signing. Internal service mesh uses mTLS (Istio). No plain-text credentials stored — HashiCorp Vault.</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--purple)">
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--purple);margin-bottom:6px">Data Security</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">File blobs encrypted at rest (AES-256). Database TDE enabled. PII fields (addresses, customer data) optionally encrypted with per-partner keys. GDPR-compliant data retention with auto-purge policies.</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--green)">
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--green);margin-bottom:6px">Network Security</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">WAF (Web Application Firewall) on API Gateway. Rate limiting per partner (configurable). IP allowlist support for SFTP partners. DDoS protection via cloud provider. VPC isolation for internal services.</div>
+        </div>
+        <div class="card" style="border-left:3px solid var(--orange)">
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700;color:var(--orange);margin-bottom:6px">Compliance &amp; Audit</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.8">SOC 2 Type II ready. Complete immutable audit trail in append-only audit table. All file downloads, mapping changes, user logins, and processing triggers logged. Configurable retention (default: 7 years for EDI audit).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// TAB SWITCHING
+function switchTab(idx) {
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+// THROUGHPUT CHART
+(function buildChart() {
+  const vals = [142,198,287,342,419,387,456,501,478,423,389,311];
+  const hours = ['20:00','21:00','22:00','23:00','00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00'];
+  const max = Math.max(...vals);
+  const container = document.getElementById('throughputChart');
+  if (!container) return;
+  vals.forEach((v,i) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const pct = (v/max*100).toFixed(0);
+    const hue = `hsl(${180 + (v/max)*60}, 80%, 55%)`;
+    col.innerHTML = `<div class="bar-block" style="height:${pct}%;background:linear-gradient(to top,var(--cyan),var(--purple));opacity:.85" data-val="${v} files" title="${v}"></div><div class="bar-label">${hours[i]}</div>`;
+    container.appendChild(col);
+  });
+})();
+
+// KPI COUNTER ANIMATION
+function animateKPI(id, target, suffix='') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const isFloat = target.toString().includes('.');
+  let cur = 0;
+  const step = Math.max(1, Math.floor(parseFloat(target)/40));
+  const t = setInterval(() => {
+    cur = Math.min(cur + step, parseFloat(target));
+    el.textContent = isFloat ? cur.toFixed(1) + suffix : Math.floor(cur).toLocaleString() + suffix;
+    if (cur >= parseFloat(target)) clearInterval(t);
+  }, 30);
+}
+
+// OBSERVE AND ANIMATE WHEN MONITORING TAB IS SHOWN
+let kpiAnimated = false;
+const origSwitch = window.switchTab;
+window.switchTab = function(idx) {
+  origSwitch(idx);
+  if (idx === 7 && !kpiAnimated) {
+    kpiAnimated = true;
+    animateKPI('kpi1', 2847);
+    animateKPI('kpi2', 2791);
+    animateKPI('kpi3', 56);
+    animateKPI('kpi4', 1.2, 's');
+  }
+};
+</script>
+</body>
+</html>

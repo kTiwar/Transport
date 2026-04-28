@@ -1,0 +1,4 @@
+2026-04-20T08:47:07.533+04:00  WARN 41620 --- [tms-edi-platform] [TmsEdiPool housekeeper] com.zaxxer.hikari.pool.HikariPool        : TmsEdiPool - Thread starvation or clock leap detected (housekeeper delta=8h21m17s436ms612µs600ns).
+2026-04-20T08:47:27.723+04:00  INFO 41620 --- [tms-edi-platform] [scheduling-1] com.tms.edi.config.SchedulerConfig       : Scheduled processing job started
+2026-04-20T08:47:27.754+04:00  INFO 41620 --- [tms-edi-platform] [scheduling-1] com.tms.edi.config.SchedulerConfig       : Found 0 SCHEDULED files to process
+2026-04-20T08:47:27.754+04:00  INFO 41620 --- [tms-edi-platform] [scheduling-1] com.tms.edi.config.SchedulerConfig       : Scheduled processing job completed
